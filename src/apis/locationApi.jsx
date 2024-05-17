@@ -24,8 +24,8 @@ export const getLocationById = (id) => {
     });
 };
 
-export const getLocationByTypeLimit = (type, page) => {
-  return Api.get(`/location/type/${type}/limit?page=${page}`)
+export const getLocationByTypeLimit = (queryParams) => {
+  return Api.get(`/location`, { params: queryParams })
     .then((response) => {
       // Xử lý dữ liệu trả về từ response ở đây
       return response.data;

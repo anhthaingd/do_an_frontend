@@ -1,6 +1,6 @@
 import Api from "./baseApi";
 
-export const getPlaygroundByLocationID= (locationID) => {
+export const getPlaygroundByLocationID = (locationID) => {
   return Api.get(`/playground/location/${locationID}`)
     .then((response) => {
       // Xử lý dữ liệu trả về từ response ở đây
@@ -12,8 +12,8 @@ export const getPlaygroundByLocationID= (locationID) => {
     });
 };
 
-export const createComment = (comment) => {
-  return Api.post(`/comments`, comment)
+export const createPlayground = (data) => {
+  return Api.post(`/playground`, data)
     .then((response) => {
       // Xử lý dữ liệu trả về từ response ở đây
       return response.data;
@@ -24,8 +24,8 @@ export const createComment = (comment) => {
     });
 };
 
-export const deleteComment = (commentId) => {
-  return Api.delete(`/comments/${commentId}`)
+export const updatePlayground = (id, data) => {
+  return Api.put(`/playground/${id}`, data)
     .then((response) => {
       // Xử lý dữ liệu trả về từ response ở đây
       return response.data;

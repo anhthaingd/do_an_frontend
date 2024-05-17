@@ -8,35 +8,28 @@ import SubHeader from "./components/generalScreen/SubHeader";
 import Football from "./pages/Football";
 import LocationDetail from "./pages/LocationDetail";
 import MyLocation from "./pages/MyLocation";
+import LocationPage from "./pages/LocationPage";
+import { items } from "./utils/sport";
+import Sport from "./pages/Sport";
+import AdminPage from "./pages/AdminPage";
 function App() {
+  const role = localStorage.getItem("role");
   return (
     <Router>
       <div className="App">
         <Routes>
           <Route path="/" element={<LayoutsWithHeader />}>
-            <Route exact path="/bong-da" element={<Football />} />
-            <Route exact path="/location/:id" element={<LocationDetail />} />
+            {/* <Route exact path="/bong-da" element={<Football />} /> */}
+            {items.map((item) => (
+              <Route
+                key={item.id}
+                exact
+                path={`/${item.path}`}
+                element={<Sport sportDetail={item} />}
+              />
+            ))}
+            <Route exact path="/location/:id" element={<LocationPage />} />
             <Route exact path="/my_location" element={<MyLocation />} />
-            {/* <Route path="*" element={<NotFound />} />
-
-            <Route exact path="/" element={<PrivateRoute />}>
-              <Route exact path="/" element={<Home />} />
-            </Route>
-
-            <Route exact path="/story/:slug" element={<DetailStory />} />
-
-            <Route exact path="/addstory" element={<PrivateRoute />}>
-              <Route exact path="/addstory" element={<AddStory />} />
-            </Route>
-
-            <Route exact path="/profile" element={<PrivateRoute />}>
-              <Route exact path="/profile" element={<Profile />} />
-            </Route> */}
-
-            {/* <Route exact path="/edit_profile" element={<PrivateRoute />}>
-              <Route exact path="/edit_profile" element={<EditProfile />} />
-            </Route> */}
-            {/* <Route exact path="/" element={<Home />} /> */}
 
             <Route exact path="/change_Password">
               <Route
@@ -45,14 +38,6 @@ function App() {
                 // element={<ChangePassword />}
               />
             </Route>
-
-            {/* <Route exact path="/story/:slug/like" element={<PrivateRoute />}>
-              <Route exact path="/story/:slug/like" element={<DetailStory />} />
-            </Route> */}
-
-            {/* <Route exact path="/story/:slug/edit" element={<PrivateRoute />}>
-              <Route exact path="/story/:slug/edit" element={<EditStory />} />
-            </Route> */}
 
             <Route exact path="/story/:slug/delete">
               <Route
@@ -80,7 +65,7 @@ function App() {
 
           <Route exact path="/login" element={<LoginScreen />} />
           <Route exact path="/register" element={<RegisterScreen />} />
-
+          <Route exact path="/admin" element={<AdminPage />} />
           <Route
             exact
             path="/forgotpassword"

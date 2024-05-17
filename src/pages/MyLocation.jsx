@@ -6,16 +6,9 @@ import { Button, DatePicker, Flex, Form, TimePicker } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import {
-  Cascader,
-  ColorPicker,
   Input,
   InputNumber,
-  Radio,
   Select,
-  Slider,
-  Switch,
-  TreeSelect,
-  Upload,
 } from "antd";
 
 import dayjs from "dayjs";
@@ -64,7 +57,7 @@ const MyLocation = () => {
   useEffect(() => {
     fetchLocation();
     fetchAddressData();
-  }, []);
+  }, [listLocation]);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -220,7 +213,7 @@ const MyLocation = () => {
         })}
       </div>
       <Modal
-        title="Thông tin"
+        title="Nhập thông tin"
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -233,7 +226,7 @@ const MyLocation = () => {
             style={{ backgroundColor: "#1677ff" }}
             loading={loading}
           >
-            Đặt sân
+            Tạo
           </Button>,
           <Button key="back" onClick={handleCancel}>
             Hủy

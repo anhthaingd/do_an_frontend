@@ -14,7 +14,6 @@ const Header = () => {
   const dispatch = useDispatch();
   const bool = localStorage.getItem("authToken") ? true : false;
   const role = localStorage.getItem("role");
-  console.log(role);
   const [auth, setAuth] = useState(bool);
   const { isLoggedIn } = useSelector((state) => state.auth);
   // const { activeUser } = useContext(AuthContext)
@@ -32,6 +31,7 @@ const Header = () => {
     localStorage.removeItem("userId");
     localStorage.removeItem("role");
     dispatch(actions.logout());
+    navigate("/");
   };
   const handleChange = () => {
     navigate({
@@ -55,7 +55,7 @@ const Header = () => {
               <div>
                 {role == 1 ? (
                   <button
-                    className="addStory-link"
+                    className="addStory-link pt-2"
                     onClick={() => navigate("/my_location")}
                   >
                     Sân của tôi

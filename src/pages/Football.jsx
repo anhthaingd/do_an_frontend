@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { getLocationByType, getLocationByTypeLimit } from "../apis/locationApi";
 import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import LocationList from "../components/LocationList";
-import LocationCard from "../components/cards/LocationCard";
-import Pagination from "../components/navigation/Pagination";
 const Football = () => {
   const [params] = useSearchParams();
   const page = params.get("page");

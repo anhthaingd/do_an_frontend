@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getLocationById } from "../apis/locationApi";
 import {
   AimOutlined,
@@ -11,26 +11,82 @@ import {
   WifiOutlined,
 } from "@ant-design/icons";
 import MachineTimeline from "../components/MachineTimeline";
-import { getPlaygroundByLocationID } from "../apis/playgroundApi";
+import {
+  createPlayground,
+  getPlaygroundByLocationID,
+} from "../apis/playgroundApi";
 import PlaygroundCard from "../components/cards/PlaygroundCard";
-
+import { getUserById } from "../apis/userApi";
+import Modal from "antd/es/modal/Modal";
+import {
+  Button,
+  DatePicker,
+  Flex,
+  Form,
+  TimePicker,
+  Input,
+  InputNumber,
+  Select,
+  Tabs,
+} from "antd";
+import TabPane from "antd/es/tabs/TabPane";
+import LocationCard from "../components/cards/LocationCard";
 const LocationDetail = () => {
   const locationID = useParams().id;
   const [location, setLocation] = useState({});
   const [playgrounds, setPlaygrounds] = useState([]);
-  const fetchLocation = async () => {
-    const response = await getLocationById(locationID);
-    setLocation(response.data);
+  const [owner, setOwner] = useState();
+  const [numberPlayground, setNumberPlayground] = useState(0);
+  const [width, setWidth] = useState();
+  const [length, setLength] = useState();
+  const [price, setPrice] = useState();
+  const [type, setType] = useState();
+  const navigate = useNavigate();
+  const role = localStorage.getItem("role");
+  const fetchPlayground = async (locationId) => {
+    try {
+      const playgroundResponse = await getPlaygroundByLocationID(locationId);
+      setPlaygrounds(playgroundResponse.data);
+    } catch (error) {}
   };
-  const fetchPlayground = async () => {
-    const response = await getPlaygroundByLocationID(locationID);
-    setPlaygrounds(response.data);
+  const fetchData = async () => {
+    try {
+      const locationResponse = await getLocationById(locationID);
+      setLocation(locationResponse.data);
+
+      setOwner(locationResponse.data.owner);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
   useEffect(() => {
-    fetchLocation();
-    fetchPlayground();
+    fetchData();
+    fetchPlayground(locationID);
   }, []);
-  console.log(playgrounds);
+  const savePlayground = async () => {
+    setLoading(true);
+    const data = {
+      name: "",
+      locationID: locationID,
+      width: width,
+      length: length,
+      price: price,
+      type: type,
+    };
+    try {
+      for (let i = 0; i < numberPlayground; i++) {
+        const name = `Sân số ${playgrounds.length + i + 1}`;
+        data.name = name;
+        const response = await createPlayground(data);
+        // handle response or do something with it
+      }
+      fetchPlayground(locationID);
+      setLoading(false);
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Error saving playground:", error);
+    }
+  };
   const getTime = (time) => {
     const dateTime = new Date(time);
     const hours = dateTime.getHours(); // Lấy giờ
@@ -38,8 +94,26 @@ const LocationDetail = () => {
     const a = hours + ":" + minutes;
     return a;
   };
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = async () => {
+    // setLoading(true);
+    // setTimeout(() => {
+    //   setLoading(false);
+    setIsModalOpen(false);
+    //   savePlayground();
+    // }, 3000);
+    const response = await savePlayground();
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <div className="p-10">
+    <div className="p-5">
       <div>
         <p className="text-2xl font-bold">{location.name}</p>
         <div className="flex text-center">
@@ -49,12 +123,16 @@ const LocationDetail = () => {
           </p>
         </div>
         <div className="flex">
-          <div className="w-2/3 pt-6">
+          <div className="w-2/3 h-2/3 pt-6 ">
             <img
-              src="https://phuongnam24h.com/img_data/images/nhung-san-bong-da-dep-nhat-the-gioi.jpg"
+              src={
+                location.image
+                  ? location.image
+                  : "https://phuongnam24h.com/img_data/images/nhung-san-bong-da-dep-nhat-the-gioi.jpg"
+              }
               alt=""
               className=" inset-0 object-cover rounded-2xl "
-              style={{ width: "90%", height: "90%" }}
+              style={{ width: "90%", height: "400px" }}
             />
           </div>
           <div className="w-1/3">
@@ -81,7 +159,7 @@ const LocationDetail = () => {
             <div>
               <div className="flex justify-between pr-5 pt-2">
                 <p className="">Chu san:</p>
-                <p className="font-semibold">Nguyen Doan Anh Thai</p>
+                <p className="font-semibold">{owner?.username}</p>
               </div>
               <div className="flex justify-between pr-5 ">
                 <p className="">Gio mo cua:</p>
@@ -91,11 +169,11 @@ const LocationDetail = () => {
               </div>
               <div className="flex justify-between pr-5">
                 <p>So san:</p>
-                <p className="font-semibold">3 San</p>
+                <p className="font-semibold">{playgrounds.length} San</p>
               </div>
               <div className="flex justify-between pr-5">
                 <p>Lien he:</p>
-                <p className="font-semibold">0362202169</p>
+                <p className="font-semibold">{owner?.phone}</p>
               </div>
             </div>
             <p className="text-lg font-semibold pl-2 pt-2">Dich vu tien ich</p>
@@ -117,9 +195,17 @@ const LocationDetail = () => {
                 <p className="ml-1 font-semibold">Cua hang the thao</p>
               </div>
             </div>
+            <div className="pt-10 flex justify-center">
+              {role == 1 ? (
+                <button className="addStory-link" onClick={showModal}>
+                  Tạo sân
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
-        <p className="text-xl font-bold">Chi tiết</p>
+
+        <p className="text-xl font-bold pt-4">Chi tiết</p>
         <div className="grid grid-cols-4 gap-4 pt-2">
           {playgrounds.map((item, index) => {
             return (
@@ -128,12 +214,80 @@ const LocationDetail = () => {
                 className="flex items-center justify-center "
                 style={{ zIndex: 20 }}
               >
-                <PlaygroundCard playground={item} />
+                <PlaygroundCard
+                  playground={item}
+                  index={index}
+                  fetchPlayground={fetchPlayground}
+                  ownerID={location?.owner?.id}
+                />
               </div>
             );
           })}
         </div>
       </div>
+      <Modal
+        title="Nhập thông tin"
+        open={isModalOpen}
+        onOk={savePlayground}
+        onCancel={handleCancel}
+        width={800}
+        footer={[
+          <Button
+            key="link"
+            type="primary"
+            onClick={savePlayground}
+            style={{ backgroundColor: "#1677ff" }}
+            loading={loading}
+          >
+            Tạo
+          </Button>,
+          <Button key="back" onClick={handleCancel}>
+            Hủy
+          </Button>,
+        ]}
+      >
+        <Form
+          labelCol={{
+            span: 6,
+          }}
+          wrapperCol={{
+            span: 15,
+          }}
+          layout="horizontal"
+          style={{
+            maxWidth: 1000,
+          }}
+        >
+          <Form.Item label="Nhập số sân bạn muốn tạo">
+            <InputNumber
+              onChange={(value) => setNumberPlayground(value)}
+              value={numberPlayground}
+            />
+          </Form.Item>
+          {/* <Form.Item label="Name">
+            <Input onChange={(e) => setWidth(e.target.value)} value={width} />
+          </Form.Item> */}
+          <Form.Item label="Width">
+            <Input onChange={(e) => setWidth(e.target.value)} value={width} />
+          </Form.Item>
+          <Form.Item label="Length">
+            <Input onChange={(e) => setLength(e.target.value)} value={length} />
+          </Form.Item>
+          <Form.Item label="Price">
+            <Input onChange={(e) => setPrice(e.target.value)} value={price} />
+          </Form.Item>
+          <Form.Item label="Type">
+            <Select onChange={(value) => setType(value)}>
+              <Select.Option key="0" value="0">
+                Thường
+              </Select.Option>
+              <Select.Option key="1" value="1">
+                Vip
+              </Select.Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

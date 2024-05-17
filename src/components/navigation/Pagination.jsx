@@ -57,7 +57,7 @@ const Pagination = ({ number, count, sport }) => {
       {!isHideEnd && (
         <PageNumber
           icon={<SlControlForward />}
-          text={Math.floor(count / 12) || 1} 
+          text={Math.floor(count / 12) || 1}
           type="end"
           setCurrentPage={setCurrentPage}
           sport={sport}

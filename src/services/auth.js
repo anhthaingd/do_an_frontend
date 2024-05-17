@@ -23,7 +23,6 @@ export const apiLogin = (payload) =>
         url: "/api/v1/auth/login",
         data: payload,
       });
-      console.log(response.data);
       localStorage.setItem("userId", response.data.userId);
       localStorage.setItem("role", response.data.role);
       resolve(response);

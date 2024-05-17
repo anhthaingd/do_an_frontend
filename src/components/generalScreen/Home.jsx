@@ -68,7 +68,6 @@ const Home = () => {
   // useEffect(() => {
   //   setPage(1)
   // }, [searchKey])
-  console.log(posts);
   return (
     <div className="Inclusive-home-page">
       <div>

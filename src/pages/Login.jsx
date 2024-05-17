@@ -12,12 +12,23 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const { role } = useSelector((state) => state.auth);
   const { isLoggedIn } = useSelector((state) => {
     return state.auth;
   });
+  const handleNavigate = () => {
+    if (isLoggedIn) {
+      if (role === 2) {
+        navigate("/admin");
+      } else if (role === 1 || role === 0) {
+        navigate("/");
+      }
+    } else {
+      navigate("/login"); // Optionally navigate to login if not logged in
+    }
+  };
   useEffect(() => {
-    isLoggedIn && navigate("/");
+    handleNavigate();
   }, [isLoggedIn]);
   const loginHandler = async (e) => {
     e.preventDefault();
@@ -95,7 +106,7 @@ const Login = () => {
           </div>
 
           <div className="login-banner-section pb-1">
-            <img src="login.png" alt="banner"  />
+            <img src="login.png" alt="banner" />
           </div>
         </div>
       </div>
