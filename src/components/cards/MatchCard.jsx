@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getUserById } from "../../apis/userApi";
 import { Button, Modal } from "antd";
-import { updateMatch } from "../../apis/matchApi";
+import { deleteMatch, updateMatch } from "../../apis/matchApi";
 
 const MatchCard = ({ match, fetchMatch, date, locationID }) => {
   const [owner, setOwner] = useState({});
@@ -15,11 +15,20 @@ const MatchCard = ({ match, fetchMatch, date, locationID }) => {
       console.log(error);
     }
   };
+  const handleDelete = async () => {
+    // try {
+    //   await deleteMatch(match.id);
+    //   fetchMatch(date, locationID);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    setIsModalOpen1(true);
+  };
   const handleChallenge = async () => {
     showModal();
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [isModalOpen1, setIsModalOpen1] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -29,16 +38,39 @@ const MatchCard = ({ match, fetchMatch, date, locationID }) => {
     await updateMatch(match.id, { opponentID: userID, status: 1 });
     fetchMatch(date, locationID);
   };
-
+  const handleOk1 = async () => {
+    setIsModalOpen(false);
+    await deleteMatch(match.id);
+    fetchMatch(date, locationID);
+  };
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  const handleCancel1 = () => {
+    setIsModalOpen1(false);
+  };
+  const today = new Date();
+  const abc = new Date(match.date);
   useEffect(() => {
     fetchOwner();
   }, [status]);
+  const dateParts = match.date.split("-");
+  const day = parseInt(dateParts[0]); // Lấy ngày
+  const month = parseInt(dateParts[1]) - 1; // Lấy tháng và trừ đi 1
+  const year = parseInt(dateParts[2]); // Lấy năm
+
+  const matchTimeParts = match.start_time.split(":");
+  const matchTime = new Date(
+    year,
+    month,
+    day,
+    parseInt(matchTimeParts[0]),
+    parseInt(matchTimeParts[1])
+  );
+
   return (
     <div
-      className="border border-blue-500 p-2 grid grid-cols-4 h-16 rounded shadow-lg  bg-white m-2"
+      className="border border-blue-500 p-2 grid grid-cols-6 h-16 rounded shadow-lg  bg-white m-2"
       style={{ width: "90%" }}
     >
       <img
@@ -46,27 +78,30 @@ const MatchCard = ({ match, fetchMatch, date, locationID }) => {
         alt="s"
         className="w-12 ml-3"
       />
+      <div className="flex  items-center text-red-500">
+        {match.playground.name}
+      </div>
       <div className="pr-2">
         <div>Tên: {owner?.username}</div>
         <div>Sđt: {owner?.phone}</div>
       </div>
-      <div className="">
+      <div className="col-span-2">
         <div>
           Thời gian: {match.start_time} - {match.end_time}
         </div>
         <div>Giá: {match.price}</div>
       </div>
-      <div className="pl-3 flex justify-center items-center">
+      <div className="flex justify-center items-center">
         {(() => {
-          if (match.status == 1) {
+          if (match.status == 1 || matchTime < today) {
             return (
-              <Button type="" className="bg-gray-300 " disabled>
-                Đã ghép cặp
+              <Button type="" className="bg-gray-400 " disabled>
+                {match.status == 1 ? "Đã ghép cặp" : "Đã quá hạn"}
               </Button>
             );
           } else if (userID == match.ownerID) {
             return (
-              <Button type="primary" danger>
+              <Button type="primary" danger onClick={handleDelete}>
                 Xóa
               </Button>
             );
@@ -84,6 +119,14 @@ const MatchCard = ({ match, fetchMatch, date, locationID }) => {
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
+        okText="Có"
+        cancelText="Không"
+      ></Modal>
+      <Modal
+        title="Bạn có chắc chắn muốn hủy trận đấu?"
+        open={isModalOpen1}
+        onOk={handleOk1}
+        onCancel={handleCancel1}
         okText="Có"
         cancelText="Không"
       ></Modal>

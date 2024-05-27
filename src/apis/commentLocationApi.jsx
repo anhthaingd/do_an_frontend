@@ -1,7 +1,7 @@
 import Api from "./baseApi";
 
-export const createLike = (like) => {
-  return Api.post(`/likes`, like)
+export const getCommentsByLocationID = (locationID) => {
+  return Api.get(`/comment/locationID/${locationID}`)
     .then((response) => {
       // Xử lý dữ liệu trả về từ response ở đây
       return response.data;
@@ -12,9 +12,8 @@ export const createLike = (like) => {
     });
 };
 
-export const deleteLike = (like) => {
-  console.log(like);
-  return Api.delete(`/likes/delete`, { data: like })
+export const createComment = (comment) => {
+  return Api.post(`/comment`, comment)
     .then((response) => {
       // Xử lý dữ liệu trả về từ response ở đây
       return response.data;
@@ -25,8 +24,8 @@ export const deleteLike = (like) => {
     });
 };
 
-export const getLikeByPostId = (postId) => {
-  return Api.get(`/likes/postId/${postId}`)
+export const deleteComment = (commentId) => {
+  return Api.delete(`/comment/${commentId}`)
     .then((response) => {
       // Xử lý dữ liệu trả về từ response ở đây
       return response.data;

@@ -22,7 +22,7 @@ const Football = () => {
     fetchLocation();
   }, [params]);
   return (
-    <div className="pt-2">
+    <div className="pt-2 ">
       <div className="flex justify-center p-2 ">
         <div className="w-3/5 pr-2 rounded h-full">
           <img src="football.jpg" alt="Football" className="h-full" />

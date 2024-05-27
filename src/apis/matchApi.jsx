@@ -42,3 +42,13 @@ export const updateMatch = (id, data) => {
       throw error;
     });
 }
+
+export const deleteMatch = (id) => {
+  return Api.delete(`/match/${id}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+}

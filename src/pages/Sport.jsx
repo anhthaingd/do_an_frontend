@@ -32,7 +32,6 @@ const Sport = ({ sportDetail }) => {
         max: 12,
         ...queryParams,
       });
-      console.log(response);
       setCount(response?.data?.count);
       setListLocation(response.data.rows);
     } catch (error) {
@@ -115,7 +114,7 @@ const Sport = ({ sportDetail }) => {
     fetchAddressData();
   }, [params, sportDetail.type]);
   return (
-    <div className="pt-2">
+    <div className="pt-2 bgOfGroup">
       <div className="flex justify-center p-2 border border-blue-500">
         <div className="w-3/5 pr-2 rounded flex justify-center ">
           <img

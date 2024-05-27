@@ -1,46 +1,49 @@
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+  TimePicker,
+} from "antd";
 import React, { useEffect, useState } from "react";
-import { createLocation, getLocationByUserID } from "../apis/locationApi";
-import LocationCard from "../components/cards/LocationCard";
-import { PlusOutlined } from "@ant-design/icons";
-import { Button, DatePicker, Flex, Form, TimePicker } from "antd";
-import { useNavigate, useParams } from "react-router-dom";
-import { format } from "date-fns";
-import { Input, InputNumber, Select } from "antd";
-
+import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
-import Modal from "antd/es/modal/Modal";
 import axios from "axios";
-const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
-const formats = "HH:mm";
-const MyLocation = () => {
-  const { RangePicker } = DatePicker;
-  const { TextArea } = Input;
-  const normFile = (e) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
+import { updateLocation } from "../../apis/locationApi";
+const ModalEdit = ({
+  openEditModal,
+  setOpenEditModal,
+  location,
+  fetchLocation,
+}) => {
+  const formats = "HH:mm";
   const userID = localStorage.getItem("userId");
   const { id } = useParams();
   const [file, setFile] = useState("");
-  const [name, setName] = useState("");
-  const [image, setImage] = useState("");
-  const [type, setType] = useState(0);
-  const [sale, setSale] = useState(0);
-  const [openTime, setOpenTime] = useState();
+  const [name, setName] = useState(location.name);
+  const [image, setImage] = useState(location.image);
+  const [type, setType] = useState(location.type);
+  const [sale, setSale] = useState(location.sale);
+  const [openTime, setOpenTime] = useState(location.open_time);
   const [closeTime, setCloseTime] = useState();
-  const [locationDetail, setLocationDetail] = useState("");
+  const [locationDetail, setLocationDetail] = useState(
+    location.location_detail
+  );
   const [listLocation, setListLocation] = useState([]);
   const [addressData, setAddressData] = useState([]);
-  const [province, setProvince] = useState("");
-  const [district, setDistrict] = useState("");
-  const [ward, setWard] = useState("");
+  const [province, setProvince] = useState(location.province);
+  const [district, setDistrict] = useState(location.district);
+  const [ward, setWard] = useState(location.ward);
   const [districtArr, setDistrictArr] = useState([]);
   const [wardArr, setWardArr] = useState([]);
-  const fetchLocation = async () => {
-    const response = await getLocationByUserID(userID);
-    setListLocation(response.data);
+  const handleOK = () => {
+    saveLocation();
+    setOpenEditModal(false);
+  };
+  const handleCancel = () => {
+    setOpenEditModal(false);
   };
   const fetchAddressData = async () => {
     const result = await axios.get(
@@ -50,75 +53,21 @@ const MyLocation = () => {
       setAddressData(result.data);
     }
   };
-  useEffect(() => {
-    fetchLocation();
-    fetchAddressData();
-  }, [listLocation]);
-  const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
+  const typeOptions = [
+    { value: "0", label: "Bóng đá" },
+    { value: "1", label: "Cầu lông" },
+    { value: "2", label: "Tennis" },
+    { value: "3", label: "Bóng bàn" },
+    { value: "4", label: "Bóng chuyền" },
+    { value: "5", label: "Bóng rổ" },
+  ];
+  const getTypeLabel = (type) => {
+    const option = typeOptions.find(
+      (option) => option.value === type.toString()
+    );
+    return option ? option.label : "";
   };
-  const handleOk = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setIsModalOpen(false);
-      saveLocation();
-    }, 3000);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
   const addressDataWithDefaultOption = [{ Name: "Chọn tỉnh" }, ...addressData];
-  const districtArrOption = [{ Name: "Chọn huyện" }, ...districtArr];
-  const wardArrOption = [{ Name: "Chọn xã" }, ...wardArr];
-  const [loading, setLoading] = useState(false);
-  const saveLocation = async (e) => {
-    try {
-      const data = new FormData();
-      data.append("file", file);
-      data.append("upload_preset", "jay3krzh");
-      data.append("cloud_name", "dshzlfayf");
-      const res = await fetch(
-        "https://api.cloudinary.com/v1_1/dshzlfayf/image/upload",
-        {
-          method: "post",
-          body: data,
-        }
-      );
-      const imageData = await res.json();
-      const img = !imageData.secure_url
-        ? "https://simerp.io/wp-content/uploads/2021/07/POS-quan-ly-hang-ton-kho.png"
-        : imageData.secure_url;
-      const location = {
-        ownerID: userID,
-        name,
-        sale,
-        image: img,
-        type,
-        province,
-        district,
-        ward,
-        location_detail: locationDetail,
-        open_time: openTime,
-        close_time: closeTime,
-      };
-      try {
-        const response = await createLocation(location);
-        // openNotificationWithIcon(
-        //   "SUCCESS",
-        //   "Successfully created a new attack",
-        //   "success"
-        // );
-      } catch (error) {
-        console.log(error);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const [test, setTest] = useState({ imgFile: null, imgSrc: "" });
   const handleChangeFile = (e) => {
     // Lấy file từ event
@@ -139,54 +88,59 @@ const MyLocation = () => {
       };
     }
   };
+  const saveLocation = async (e) => {
+    console.log("zo");
+    const data = new FormData();
+    data.append("file", image);
+    data.append("upload_preset", "jay3krzh");
+    data.append("cloud_name", "dshzlfayf");
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dshzlfayf/image/upload",
+      {
+        method: "post",
+        body: data,
+      }
+    );
+    const imageData = await res.json();
+    const img = !imageData.secure_url ? image : imageData.secure_url;
+    const locationData = {
+      ownerID: userID,
+      name,
+      sale,
+      image: img,
+      type,
+      province,
+      district,
+      ward,
+      location_detail: locationDetail,
+      open_time: openTime,
+      close_time: closeTime,
+    };
+    try {
+      await updateLocation(location.id, locationData);
+      fetchLocation();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchAddressData();
+  }, []);
   return (
     <div>
-      <div className="flex pl-6 pt-2">
-        <p
-          className="text-sm text-gray-400 cursor-pointer"
-          onClick={() => navigate("/")}
-        >
-          Trang chu {">"}{" "}
-        </p>
-        <p className="text-sm text-gray-800 ml-1 cursor-pointer">San cua toi</p>
-      </div>
-      <div className="p-4 pl-6">
-        <Button
-          type="primary"
-          danger
-          className="flex text-center"
-          onClick={showModal}
-        >
-          <PlusOutlined className="mt-1" />
-          Tạo sân mới
-        </Button>
-      </div>
-      <div className="grid grid-cols-4 gap-4 pt-2 pb-4">
-        {listLocation.map((item, index) => {
-          return (
-            <div
-              key={index}
-              className="flex items-center justify-center "
-              style={{ zIndex: 20 }}
-            >
-              <LocationCard location={item} />
-            </div>
-          );
-        })}
-      </div>
       <Modal
         title="Nhập thông tin"
-        open={isModalOpen}
-        onOk={handleOk}
+        open={openEditModal}
+        onOk={handleOK}
         onCancel={handleCancel}
         width={800}
         footer={[
           <Button
             key="link"
             type="primary"
-            onClick={handleOk}
+            onClick={handleOK}
             style={{ backgroundColor: "#1677ff" }}
-            loading={loading}
+            // loading={loading}
           >
             Tạo
           </Button>,
@@ -196,7 +150,6 @@ const MyLocation = () => {
         ]}
       >
         <Form
-          onSubmitCapture={(e) => saveLocation(e)}
           labelCol={{
             span: 4,
           }}
@@ -228,7 +181,10 @@ const MyLocation = () => {
             <InputNumber onChange={(value) => setSale(value)} value={sale} />
           </Form.Item>
           <Form.Item label="Type">
-            <Select onChange={(value) => setType(value)}>
+            <Select
+              defaultValue={getTypeLabel(type)}
+              onChange={(value) => setType(value)}
+            >
               <Select.Option key="0" value="0">
                 Bóng đá
               </Select.Option>
@@ -247,21 +203,12 @@ const MyLocation = () => {
               <Select.Option key="5" value="5">
                 Bóng rổ
               </Select.Option>
-              {/* <Select.Option key="6" value="6">
-                Golf
-              </Select.Option>
-              <Select.Option key="7" value="7">
-                Võ thuật
-              </Select.Option>
-              <Select.Option key="8" value="8">
-                Đua xe
-              </Select.Option> */}
             </Select>
           </Form.Item>
           <Form.Item label="Vị trí">
             <div>
               <select
-                defaultValue={"a"}
+                defaultValue={province}
                 value={province}
                 onChange={(e) => {
                   const selectedProvince = e.target.value;
@@ -275,7 +222,7 @@ const MyLocation = () => {
                   }
                 }}
               >
-                {addressDataWithDefaultOption.map((item, index) => (
+                {addressData.map((item, index) => (
                   <option key={index} value={item.Name}>
                     {item.Name}
                   </option>
@@ -283,6 +230,7 @@ const MyLocation = () => {
               </select>
 
               <select
+                defaultValue={location.district}
                 value={district}
                 onChange={(e) => {
                   const selectedDistrict = e.target.value;
@@ -296,7 +244,7 @@ const MyLocation = () => {
                   }
                 }}
               >
-                {districtArrOption.map((item, index) => (
+                {districtArr.map((item, index) => (
                   <option key={index} value={item.Name}>
                     {item.Name}
                   </option>
@@ -304,11 +252,11 @@ const MyLocation = () => {
               </select>
 
               <select value={ward} onChange={(e) => setWard(e.target.value)}>
-                {wardArrOption.map((item, index) => (
+                {/* {wardArrOption.map((item, index) => (
                   <option key={index} value={item.Name}>
                     {item.Name}
                   </option>
-                ))}
+                ))} */}
               </select>
             </div>
           </Form.Item>
@@ -341,7 +289,11 @@ const MyLocation = () => {
               <></>
             )}
             {id && !test.imgSrc ? (
-              <img style={{ width: 200, height: 100 }} src={image} alt="..." />
+              <img
+                style={{ width: 200, height: 100 }}
+                src={location.image}
+                alt="..."
+              />
             ) : (
               <></>
             )}
@@ -352,4 +304,4 @@ const MyLocation = () => {
   );
 };
 
-export default MyLocation;
+export default ModalEdit;

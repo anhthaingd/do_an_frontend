@@ -9,9 +9,9 @@ import { useLocation } from "react-router-dom";
 import "../../Css/Home.css";
 
 import { useNavigate } from "react-router-dom";
-import { getAllPost } from "../../apis/postApi";
-import PostCard from "../card/PostCard";
-import NoStories from "../card/NoStories";
+import banner1 from "../../images/banner1.png";
+import banner2 from "../../images/banner2.png";
+import { Carousel } from "antd";
 const Home = () => {
   const search = useLocation().search;
   const searchKey = new URLSearchParams(search).get("search");
@@ -21,72 +21,18 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
 
-  const fetchPosts = async () => {
-    try {
-      const response = await getAllPost();
-      setPosts(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-  // useEffect(() => {
-  //   const getStories = async () => {
-
-  //     setLoading(true)
-  //     try {
-
-  //       const { data } = await axios.get(`/story/getAllStories?search=${searchKey || ""}&page=${page}`)
-
-  //       if (searchKey) {
-  //         navigate({
-  //           pathname: '/',
-  //           search: `?search=${searchKey}${page > 1 ? `&page=${page}` : ""}`,
-  //         });
-  //       }
-  //       else {
-  //         navigate({
-  //           pathname: '/',
-  //           search: `${page > 1 ? `page=${page}` : ""}`,
-  //         });
-
-  //       }
-  //       setStories(data.data)
-  //       setPages(data.pages)
-
-  //       setLoading(false)
-  //     }
-  //     catch (error) {
-  //       setLoading(true)
-  //     }
-  //   }
-  //   getStories()
-  // }, [setLoading, search, page, navigate])
-
-  // useEffect(() => {
-  //   setPage(1)
-  // }, [searchKey])
   return (
     <div className="Inclusive-home-page">
-      <div>
-        <div className="story-card-wrapper">
-          {posts.length !== 0 ? (
-            posts?.map((post) => {
-              return <PostCard key={uuidv4()} post={post} />;
-            })
-          ) : (
-            <NoStories />
-          )}
-          <img className="bg-planet-svg" src="planet.svg" alt="planet" />
-          <img className="bg-planet2-svg" src="planet2.svg" alt="planet" />
-          <img className="bg-planet3-svg" src="planet3.svg" alt="planet" />
-        </div>
-        {/* <Pagination page={page} pages={pages} changePage={setPage} /> */}
+      <div className="">
+        <Carousel autoplay>
+          <div className="h-96 w-full">
+            <img src={banner1} alt="" className="w-full h-full" />
+          </div>
+          <div>
+            <img src={banner2} alt="" />
+          </div>
+        </Carousel>
       </div>
-
-      <br />
     </div>
   );
 };

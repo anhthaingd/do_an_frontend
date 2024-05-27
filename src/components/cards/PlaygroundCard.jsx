@@ -19,6 +19,7 @@ import {
   getMatchByDateAndPlaygroundID,
 } from "../../apis/matchApi";
 import { useNavigate, useParams } from "react-router-dom";
+import { deletePlayground } from "../../apis/playgroundApi";
 const format = "HH:mm";
 dayjs.extend(customParseFormat);
 const { RangePicker } = DatePicker;
@@ -34,6 +35,7 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
   const locationID = useParams().id;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
+  const [name, setName] = useState(playground.name);
   const [width, setWidth] = useState(playground.width);
   const [length, setLength] = useState(playground.length);
   const [price, setPrice] = useState(playground.price);
@@ -124,6 +126,7 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
       setIsModalOpen(false);
       saveMatch();
       navigate();
+      fetchMachByDate(day, playground.id);
     }, 2000);
   };
   const handleCancel = () => {
@@ -135,6 +138,7 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
   const updatePlaygrounds = async () => {
     try {
       const data = {
+        name: name,
         width: width,
         length: length,
         price: price,
@@ -145,6 +149,16 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
     } catch (error) {
       console.error("Error updating playground:", error);
     }
+  };
+  const typeOptions = [
+    { value: "0", label: "Thường" },
+    { value: "1", label: "Vip" },
+  ];
+  const getTypeLabel = (type) => {
+    const option = typeOptions.find(
+      (option) => option.value === type.toString()
+    );
+    return option ? option.label : "";
   };
   const handleEditOk = () => {
     setLoading(true);
@@ -160,8 +174,9 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
   const [loading, setLoading] = useState(false);
   const handleDateChange = (e) => {
     if (!e) {
-      message.error("Please select a date");
-      setDisableButton(true);
+      setDay("");
+      message.error("Hãy chọn ngày");
+      // setDisableButton(true);
     } else {
       setDay(e.format("DD-MM-YYYY"));
       fetchMachByDate(e.format("DD-MM-YYYY"), playground.id);
@@ -170,7 +185,8 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
   const handleStartTimeChange = (time) => {
     if (!time) {
       // setDisableButton(true);
-      message.error("Please select a start time");
+      setStartTime("");
+      message.error("Hãy chọn thời gian bắt đầu");
     } else {
       const newStart = dayjs(time.format("HH:mm"), "HH:mm");
       const overlaps = listMatchByDate.some((item) => {
@@ -192,10 +208,10 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
       }
     }
   };
-
   const handleEndTimeChange = (time) => {
     if (!time) {
-      message.error("Please select an end time");
+      setEndTime("");
+      message.error("Hãy chọn thời gian kết thúc");
     } else {
       const newEnd = dayjs(time.format("HH:mm"), "HH:mm");
       const overlaps = listMatchByDate.some((item) => {
@@ -203,21 +219,18 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
         const existingEnd = dayjs(item.end_time, "HH:mm");
         return newEnd.isAfter(existingStart) && newEnd.isBefore(existingEnd);
       });
-
+      console.log("ov", isTimeRangeOverlap());
       if (overlaps) {
-        message.error("Selected end time overlaps with an existing time slot");
+        message.error("Khoảng thời gian này đã có người khác đặt");
         setDisableButton(true); // Disable the button if there's an overlap
       } else {
         setEndTime(time.format("HH:mm"));
-        console.log(isTimeRangeOverlap(), "overlap");
-        console.log("checkStartTime", checkStartTime);
         !isTimeRangeOverlap() && checkStartTime === true
           ? setDisableButton(false)
           : setDisableButton(true); // Enable the button if there's no overlap
       }
     }
   };
-  console.log("bt", disableButton);
   const disabledStartTime = () => {
     return {
       disabledHours: () => {
@@ -289,18 +302,30 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
       day === "" ||
       isTimeRangeOverlap()
     ) {
+      const errorMessage = isTimeRangeOverlap()
+        ? "Khoảng thời gian đã bị trùng"
+        : null;
+      errorMessage && message.error(errorMessage);
       setDisableButton(true);
     } else {
       setDisableButton(false);
     }
   };
-  console.log("a", isTimeRangeOverlap());
+  const handleDeletePlayground = async () => {
+    try {
+      await deletePlayground(playground.id);
+      setIsOpenEdit(false);
+      fetchPlayground(locationID);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     fetchUser();
     setCheckStartTime(false);
     handleDisableButton();
     // fetchMachByDate();
-  }, [playground, day]);
+  }, [playground, day, startTime, endTime]);
   return (
     <div className="pt-3">
       <Card
@@ -462,6 +487,14 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
         width={500}
         footer={[
           <Button
+            key="back"
+            onClick={handleDeletePlayground}
+            danger
+            className="mr-44"
+          >
+            Xóa sân
+          </Button>,
+          <Button
             key="link"
             type="primary"
             onClick={handleEditOk}
@@ -487,6 +520,9 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
             maxWidth: 1000,
           }}
         >
+          <Form.Item label="Name">
+            <Input onChange={(e) => setName(e.target.value)} value={name} />
+          </Form.Item>
           <Form.Item label="Width">
             <Input onChange={(e) => setWidth(e.target.value)} value={width} />
           </Form.Item>
@@ -498,6 +534,7 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
           </Form.Item>
           <Form.Item label="Type">
             <Select
+              defaultValue={getTypeLabel(type)}
               onChange={(value) => setType(value)}
               // value={type === "0" ? "0" : "1"}
             >

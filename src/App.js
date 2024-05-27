@@ -12,6 +12,8 @@ import LocationPage from "./pages/LocationPage";
 import { items } from "./utils/sport";
 import Sport from "./pages/Sport";
 import AdminPage from "./pages/AdminPage";
+import Group from "./pages/Group";
+import Home from "./components/generalScreen/Home";
 function App() {
   const role = localStorage.getItem("role");
   return (
@@ -28,9 +30,10 @@ function App() {
                 element={<Sport sportDetail={item} />}
               />
             ))}
+            <Route exact path="/" element={<Home />} />
             <Route exact path="/location/:id" element={<LocationPage />} />
             <Route exact path="/my_location" element={<MyLocation />} />
-
+            <Route exact path="/group/:id" element={<Group />} />
             <Route exact path="/change_Password">
               <Route
                 exact

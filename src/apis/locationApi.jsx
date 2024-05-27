@@ -59,3 +59,27 @@ export const createLocation = (data) => {
       throw error;
     });
 }
+
+export const updateLocation = (id, data) => {
+  return Api.put(`/location/${id}`, data)
+    .then((response) => {
+      // Xử lý dữ liệu trả về từ response ở đây
+      return response.data;
+    })
+    .catch((error) => {
+      // Xử lý lỗi ở đây
+      throw error;
+    });
+}
+
+export const deleteLocation = (id) => {
+  return Api.delete(`/location/${id}`)
+    .then((response) => {
+      // Xử lý dữ liệu trả về từ response ở đây
+      return response.data;
+    })
+    .catch((error) => {
+      // Xử lý lỗi ở đây
+      throw error;
+    });
+}

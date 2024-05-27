@@ -27,7 +27,7 @@ const LocationPage = () => {
     <div className=" ">
       <Tabs defaultActiveKey="1" tabPosition={tabPosition}>
         {items.map((item) => (
-          <Tabs.TabPane tab={item.label} key={item.key}>
+          <Tabs.TabPane tab={item.label} key={item.key} className="bgOfGroup">
             {item.content}
           </Tabs.TabPane>
         ))}
