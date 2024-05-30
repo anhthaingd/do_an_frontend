@@ -5,7 +5,7 @@ const ChatBox = () => {
   const { messages } = useContext(ChatContext);
   const loginUserID = localStorage.getItem("userId");
   const messagesEndRef = useRef(null);
-
+ 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };

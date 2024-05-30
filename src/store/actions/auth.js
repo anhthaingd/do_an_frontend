@@ -8,6 +8,7 @@ export const register = (payload) => async (dispatch) => {
       dispatch({
         type: actionTypes.REGISTER_SUCCESS,
         data: response.data.token,
+        loginUserIDRd: response.data.id,
       });
     } else {
       dispatch({
@@ -30,7 +31,8 @@ export const login = (payload) => async (dispatch) => {
       dispatch({
         type: actionTypes.LOGIN_SUCCESS,
         data: response.data.token,
-        role: response.data.role
+        role: response.data.role,
+        loginUserIDRd: response.data.userId,
       });
     } else {
       dispatch({

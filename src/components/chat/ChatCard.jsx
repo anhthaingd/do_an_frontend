@@ -3,11 +3,11 @@ import avatar from "../../images/avatar.jpg";
 import { getMessageInboxHash } from "../../apis/chatApi";
 import { ChatContext } from "../../context/ChatContext";
 import { updateRoom } from "../../apis/roomApi";
-const ChatCard = ({ user, room, fetchUser }) => {
+const ChatCard = ({ guest, room, fetchUser }) => {
   const loginUserID = localStorage.getItem("userId");
-  const inboxHash1 = `${loginUserID}-${user.id}`;
-  const inboxHash2 = `${user.id}-${loginUserID}`;
-  const { setGuest, setMessages, setIsChange, isChange } =
+  const inboxHash1 = `${loginUserID}-${guest.id}`;
+  const inboxHash2 = `${guest.id}-${loginUserID}`;
+  const { setGuest, setMessages, setIsChange, isChange, onlineUsers } =
     useContext(ChatContext);
   const fetchMessage = async () => {
     try {
@@ -17,12 +17,12 @@ const ChatCard = ({ user, room, fetchUser }) => {
       if (!response.data || response.data.length === 0) {
         // If no data with the first inbox hash, try with the second
         response = await getMessageInboxHash({
-          senderID: user.id,
+          senderID: guest.id,
           inboxHash: inboxHash1,
         });
       }
       setMessages(response.data);
-      setGuest(user);
+      setGuest(guest);
     } catch (error) {
       console.error(error);
     }
@@ -42,7 +42,7 @@ const ChatCard = ({ user, room, fetchUser }) => {
         <div className="flex">
           <img src={avatar} alt="" className="w-12 h-12 rounded-full mr-1" />
           <div>
-            <div className="font-semibold">{user.username}</div>
+            <div className="font-semibold">{guest.username}</div>
             <div
               className={` text-sm ${
                 room?.unSeenNumbers > 0
@@ -67,7 +67,13 @@ const ChatCard = ({ user, room, fetchUser }) => {
           ) : (
             ""
           )}
-          <span className="user-online"></span>
+          <span
+            className={
+              onlineUsers?.some((user) => user?.userID === guest?.id)
+                ? "user-online"
+                : ""
+            }
+          ></span>
         </div>
       </div>
     </div>

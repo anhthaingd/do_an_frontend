@@ -5,18 +5,16 @@ import PotentialChat from "./PotentialChat";
 import ChatCard from "./ChatCard";
 import { ChatContext } from "../../context/ChatContext";
 
-const UserChat = ({rooms, fetchUser}) => {
-  
+const UserChat = ({ rooms, fetchUser }) => {
   const usersList = rooms.map((room) => getUserById(room.receiverID));
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
   return (
     <div>
       <div className="flex gap-2">
         {rooms?.map((item, index) => {
           return (
             <div key={index} className="">
-              <PotentialChat user={item.receiver} />
+              <PotentialChat guest={item.receiver} />
             </div>
           );
         })}
@@ -26,7 +24,7 @@ const UserChat = ({rooms, fetchUser}) => {
           return (
             <div key={index} className="">
               <ChatCard
-                user={item.receiver}
+                guest={item.receiver}
                 room={item}
                 fetchUser={fetchUser}
               />

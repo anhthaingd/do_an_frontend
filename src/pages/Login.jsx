@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import "../Css/Login.css";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,21 +6,25 @@ import Header from "../components/generalScreen/Header";
 import Footer from "../components/generalScreen/Footer";
 import * as actions from "../store/actions";
 import { UseDispatch, useDispatch, useSelector } from "react-redux";
+import { AuthContext } from "../context/AuthContext";
 const Login = () => {
+  const { setLoginUserInfo } = useContext(AuthContext);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { role } = useSelector((state) => state.auth);
+  const { role, loginUserIDRd } = useSelector((state) => state.auth);
   const { isLoggedIn } = useSelector((state) => {
     return state.auth;
   });
   const handleNavigate = () => {
     if (isLoggedIn) {
       if (role === 2) {
+        setLoginUserInfo(loginUserIDRd);
         navigate("/admin");
       } else if (role === 1 || role === 0) {
+        setLoginUserInfo(loginUserIDRd);
         navigate("/");
       }
     } else {

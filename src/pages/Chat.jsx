@@ -10,7 +10,8 @@ import SubHeader from "../components/generalScreen/SubHeader";
 import { getMessageInboxHash, sendMessage } from "../apis/chatApi";
 import { getRoomByUserID } from "../apis/roomApi";
 const Chat = () => {
-  const { guest, isChange, setMessages } = useContext(ChatContext);
+  const { guest, isChange, setMessages, setNewMessage } =
+    useContext(ChatContext);
   const [inputValue, setInputValue] = useState("");
   const loginUserID = parseInt(localStorage.getItem("userId"), 10);
   const inboxHash1 = `${loginUserID}-${guest?.id}`;
@@ -50,6 +51,8 @@ const Chat = () => {
           receiverID: guest.id,
           message: inputValue,
         });
+        setNewMessage(response.data);
+        // setMessages((prev) => [...prev, response.data]);
       } catch (error) {}
       fetchMessage();
       fetchUser();
@@ -66,6 +69,8 @@ const Chat = () => {
         receiverID: guest.id,
         message: inputValue,
       });
+      setNewMessage(response.data);
+      // setMessages((prev) => [...prev, response.data]);
       fetchMessage();
       fetchUser();
       setInputValue("");
