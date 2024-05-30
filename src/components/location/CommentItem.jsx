@@ -10,6 +10,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { deleteComment } from "../../apis/commentLocationApi";
 import { getLocationById } from "../../apis/locationApi";
+import { deleteCommentPost } from "../../apis/commentPostApi";
 // import { getPostById } from "../../apis/postApi";
 // import { deleteComment } from "../../apis/commentApi";
 
@@ -20,6 +21,7 @@ const CommentItem = ({
   count,
   numberRate,
   setCommentCount,
+  isPost,
 }) => {
   const navigate = useNavigate();
   const [likeCount, setLikeCount] = useState(comment.likeCount);
@@ -58,18 +60,34 @@ const CommentItem = ({
   };
   const handleDeleteComment = async () => {
     const comment_id = comment.id;
-    try {
-      await deleteComment(comment_id);
-      setTimeout(() => {
-        if (comment.star !== 0) {
-          document.querySelector(".rateCount").textContent = numberRate - 1;
-        }
-        // document.querySelector(".commentCount").textContent = count - 1;
-        setCommentCount(count - 1);
-      }, 650);
-      getLocationComments();
-    } catch (error) {
-      console.log("delete fail");
+    if (isPost === false) {
+      try {
+        await deleteComment(comment_id);
+        setTimeout(() => {
+          // if (comment.star !== 0) {
+          //   document.querySelector(".rateCount").textContent = numberRate - 1;
+          // }
+          // document.querySelector(".commentCount").textContent = count - 1;
+          setCommentCount(count - 1);
+        }, 650);
+        getLocationComments();
+      } catch (error) {
+        console.log("delete fail");
+      }
+    } else {
+      try {
+        await deleteCommentPost(comment_id);
+        setTimeout(() => {
+          // if (comment.star !== 0) {
+          //   document.querySelector(".rateCount").textContent = numberRate - 1;
+          // }
+          // document.querySelector(".commentCount").textContent = count - 1;
+          setCommentCount(count - 1);
+        }, 650);
+        getLocationComments();
+      } catch (error) {
+        console.log("delete fail");
+      }
     }
   };
 
@@ -111,18 +129,22 @@ const CommentItem = ({
           </i> */}
         </div>
 
-        <div className="comment-star flex">
-          {[...Array(5)].map((_, index) => {
-            return (
-              <FaStar
-                key={index}
-                className="star"
-                size={15}
-                color={comment.star > index ? "#0205b1" : "grey"}
-              />
-            );
-          })}
-        </div>
+        {isPost === false ? (
+          <div className="comment-star flex">
+            {[...Array(5)].map((_, index) => {
+              return (
+                <FaStar
+                  key={index}
+                  className="star"
+                  size={15}
+                  color={comment.star > index ? "#0205b1" : "grey"}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );

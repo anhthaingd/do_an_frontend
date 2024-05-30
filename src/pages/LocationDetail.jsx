@@ -447,6 +447,7 @@ const LocationDetail = () => {
           activeUser={activeUser}
           numberRate={numberRate}
           setCommentCount={setCommentCount}
+          isPost={false}
         />
       </div>
       <Modal

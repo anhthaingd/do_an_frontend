@@ -1,6 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import avatar from "../../images/avatar.jpg";
+import { CommentOutlined, LikeOutlined, LikeTwoTone } from "@ant-design/icons";
+import {
+  createLikePost,
+  deleteLikePost,
+  getLikeByPostID,
+} from "../../apis/likePost";
+import { useParams } from "react-router-dom";
+import { getUserById } from "../../apis/userApi";
+import CommentSidebar from "../location/CommentSidebar";
+import { getCommentsByPostID } from "../../apis/commentPostApi";
 const PostCard = ({ post }) => {
+  const userID = localStorage.getItem("userId");
+  const [activeUser, setActiveUser] = useState({});
+  const [likeStatus, setLikeStatus] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [sidebarShowStatus, setSidebarShowStatus] = useState(false);
+  const [commentCount, setCommentCount] = useState(0);
+  const fetchActiveUser = async () => {
+    try {
+      const response = await getUserById(userID);
+      setActiveUser(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const editDate = (createdAt) => {
     const now = new Date();
     const d = new Date(createdAt);
@@ -21,6 +45,45 @@ const PostCard = ({ post }) => {
       return `${days} ngày trước`;
     }
   };
+
+  const fetchCountLike = async () => {
+    const response = await getLikeByPostID(post.id);
+    const isLikedArray = response.data.map((like) => {
+      return like.userID == activeUser.id && like.postID == post.id;
+    });
+    const isLiked = isLikedArray.some((liked) => liked);
+    setLikeStatus(isLiked);
+    setLikeCount(response.data.length);
+  };
+  const handleLike = async () => {
+    const data = { userID: activeUser.id, postID: post.id };
+    if (likeStatus === false) {
+      await createLikePost(data);
+    } else {
+      await deleteLikePost(data);
+    }
+    // setTimeout(() => {
+    //   setLikeStatus(!likeStatus);
+    // }, 1500);
+    setLikeStatus(!likeStatus);
+    fetchCountLike();
+  };
+  const getPostComments = async () => {
+    try {
+      const { data } = await getCommentsByPostID(post.id);
+      if (data) {
+        setCommentCount(data.length);
+        const filteredData = data.filter((comment) => comment.star !== 0);
+      }
+    } catch (error) {
+      console.log(error.response.data.error);
+    }
+  };
+  useEffect(() => {
+    fetchActiveUser();
+    fetchCountLike();
+    getPostComments()
+  }, [likeCount]);
   return (
     <div className="p-4 bg-white mb-4 rounded-md">
       <div className="flex items-center">
@@ -57,6 +120,59 @@ const PostCard = ({ post }) => {
           </div>
         </div>
       )}
+      <div className="border-2 pb-2 border-b-gray-300">
+        <div className="flex justify-between pt-1">
+          <div className="flex pl-4">
+            <LikeTwoTone style={{ fontSize: "20px" }} />
+
+            {likeStatus ? (
+              <p className="font-semibold text-gray-800 ml-1">
+                Bạn và {likeCount - 1} người khác
+              </p>
+            ) : (
+              <p className="font-semibold text-gray-800 ml-1">{likeCount}</p>
+            )}
+          </div>
+          <div className="flex">
+            <p className="font-semibold text-gray-800 mr-1">{commentCount}</p>
+            <CommentOutlined style={{ fontSize: "20px" }} className="pr-5" />
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 border-2 border-b-gray-300">
+        <div className=" p-1 rounded-md" onClick={handleLike}>
+          {likeStatus ? (
+            <div className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md">
+              <LikeOutlined style={{ fontSize: "24px", color: "blue" }} />
+              <p className="font-semibold ml-1 text-blue-800">Thích</p>
+            </div>
+          ) : (
+            <div className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md">
+              <LikeOutlined style={{ fontSize: "24px" }} />
+              <p className="font-semibold ml-1">Thích</p>
+            </div>
+          )}
+        </div>
+        <div
+          className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md"
+          onClick={() => {
+            setSidebarShowStatus(!sidebarShowStatus);
+          }}
+        >
+          <CommentOutlined style={{ fontSize: "24px" }} />
+          <p className="font-semibold ml-1">Bình luận</p>
+        </div>
+        <div className="CommentFieldEmp">
+          <CommentSidebar
+            locationID={post.id}
+            sidebarShowStatus={sidebarShowStatus}
+            setSidebarShowStatus={setSidebarShowStatus}
+            activeUser={activeUser}
+            setCommentCount={setCommentCount}
+            isPost={true}
+          />
+        </div>
+      </div>
     </div>
   );
 };

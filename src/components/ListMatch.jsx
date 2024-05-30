@@ -9,7 +9,6 @@ const ListMatch = () => {
   const [listMatch, setListMatch] = useState([]);
   const fetchMatch = async (date, locationID) => {
     try {
-      console.log("abc");
       const matchResponse = await getMatchByDateAndLocationID(date, locationID);
       setListMatch(matchResponse.data);
     } catch (error) {
@@ -25,7 +24,7 @@ const ListMatch = () => {
   }, []);
   console.log(listMatch);
   return (
-    <div className="pt-5">
+    <div className="pt-5 ">
       <DatePicker
         status="error"
         format={dateFormatList}

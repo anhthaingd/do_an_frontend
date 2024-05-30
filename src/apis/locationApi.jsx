@@ -46,7 +46,7 @@ export const getLocationByUserID = (id) => {
       // Xử lý lỗi ở đây
       throw error;
     });
-}
+};
 
 export const createLocation = (data) => {
   return Api.post("/location", data)
@@ -58,7 +58,7 @@ export const createLocation = (data) => {
       // Xử lý lỗi ở đây
       throw error;
     });
-}
+};
 
 export const updateLocation = (id, data) => {
   return Api.put(`/location/${id}`, data)
@@ -70,7 +70,7 @@ export const updateLocation = (id, data) => {
       // Xử lý lỗi ở đây
       throw error;
     });
-}
+};
 
 export const deleteLocation = (id) => {
   return Api.delete(`/location/${id}`)
@@ -82,4 +82,14 @@ export const deleteLocation = (id) => {
       // Xử lý lỗi ở đây
       throw error;
     });
-}
+};
+
+export const getAllLocation = () => {
+  return Api.get("/location/all")
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+};

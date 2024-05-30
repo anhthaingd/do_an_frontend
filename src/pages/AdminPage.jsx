@@ -29,7 +29,7 @@ const AdminPage = () => {
   return (
     <div>
       <Header />
-      <div className=" ">
+      <div className=" min-h-[568px]">
         <Tabs defaultActiveKey="1" tabPosition={"left"}>
           {items.map((item) => (
             <Tabs.TabPane tab={item.label} key={item.key}>

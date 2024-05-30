@@ -7,20 +7,31 @@ import { useLocation } from "react-router-dom";
 // import NoStories from "../StoryScreens/NoStories";
 // import Pagination from "./Pagination";
 import "../../Css/Home.css";
-
+import sale from "../../images/sale.png";
 import { useNavigate } from "react-router-dom";
 import banner1 from "../../images/banner1.png";
 import banner2 from "../../images/banner2.png";
 import { Carousel } from "antd";
+import { getAllLocation } from "../../apis/locationApi";
+import MultipleLocation from "../location/MultipleLocation";
 const Home = () => {
   const search = useLocation().search;
-  const searchKey = new URLSearchParams(search).get("search");
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(1);
-
+  const [listLocation, setListLocation] = useState([]);
+  const fetchLocation = async () => {
+    try {
+      const response = await getAllLocation();
+      setListLocation(response.data);
+    } catch (error) {
+      console.error("Fetch location error: ", error);
+    }
+  };
+  useEffect(() => {
+    fetchLocation();
+  }, []);
+  const saleLocation = listLocation
+    .filter((location) => location.sale !== null && location.sale > 0)
+    .sort((a, b) => b.sale - a.sale) // Sắp xếp giảm dần theo thuộc tính sale
+    .slice(0, 8);
   return (
     <div className="Inclusive-home-page">
       <div className="">
@@ -33,6 +44,16 @@ const Home = () => {
           </div>
         </Carousel>
       </div>
+      <div className=" pt-4 mb-5 pl-4">
+        <div className="flex">
+          <img src={sale} alt="" className="w-10 mr-1" />
+          <span className="line-text text-3xl font-bold">Flash Sale</span>
+        </div>
+      </div>
+      <MultipleLocation
+        listLocation={saleLocation}
+        className="border-2 border-red-500"
+      />
     </div>
   );
 };

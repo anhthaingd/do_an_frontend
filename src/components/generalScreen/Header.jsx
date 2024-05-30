@@ -16,7 +16,9 @@ import TextArea from "antd/es/input/TextArea";
 import { createGroup } from "../../apis/groupApi";
 import { createMember } from "../../apis/memberApi";
 import GroupSidebar from "../group/GroupSidebar";
+import useQueryParams from "../../hooks/useQueryParams";
 const Header = () => {
+  const { queryParams, navigate } = useQueryParams();
   const userID = localStorage.getItem("userId");
   const dispatch = useDispatch();
   const bool = localStorage.getItem("authToken") ? true : false;
@@ -25,7 +27,6 @@ const Header = () => {
   const { isLoggedIn } = useSelector((state) => state.auth);
   // const { activeUser } = useContext(AuthContext)
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -105,14 +106,14 @@ const Header = () => {
     dispatch(actions.logout());
     navigate("/");
   };
-  const handleChange = () => {
-    navigate({
-      pathname: "/cves/",
-      search: createSearchParams({
-        page: 1,
-      }).toString(),
-    });
-  };
+  // const handleChange = () => {
+  //   navigate({
+  //     pathname: "/cves/",
+  //     search: createSearchParams({
+  //       page: 1,
+  //     }).toString(),
+  //   });
+  // };
   const [test, setTest] = useState({ imgFile: null, imgSrc: "" });
   const handleChangeFile = (e) => {
     // Lấy file từ event
@@ -157,6 +158,12 @@ const Header = () => {
             <div className="auth_options">
               <button className="addStory-link pt-2" onClick={showModal}>
                 Tạo nhóm mới
+              </button>
+              <button
+                className="addStory-link pt-2 pb-2"
+                onClick={() => navigate("/chat")}
+              >
+                Chat
               </button>
               <button
                 className="addStory-link pt-2 pb-2"

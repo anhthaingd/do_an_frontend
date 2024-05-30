@@ -31,12 +31,19 @@ const GroupSidebar = ({ isOpen, onClose, dropdownRef }) => {
         </button>
       </div>
       <div className="p-4 overflow-y-auto" style={{ maxHeight: "500px" }}>
-        <input
+        {/* <input
           type="text"
           placeholder="Tìm kiếm nhóm"
           className="w-full p-2 rounded bg-gray-700 text-white focus:outline-none"
-        />
-
+        /> */}
+        <div className="flex justify-end mb-2">
+          <p
+            className="text-blue-300 cursor-pointer hover:text-red-100"
+            onClick={() => navigate("/groups")}
+          >
+            Tất cả nhóm
+          </p>
+        </div>
         <div className="mt-4">
           {groups.map((group, index) => (
             <div
@@ -52,7 +59,7 @@ const GroupSidebar = ({ isOpen, onClose, dropdownRef }) => {
               >
                 <img
                   src={group.group.image}
-                  alt=""
+                  alt="a"
                   className="w-12 h-12 ml-1 mr-3 rounded-full"
                 />
                 <div className="font-bold">{group.group.name}</div>

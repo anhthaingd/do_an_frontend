@@ -8,7 +8,8 @@ const StoryComments = ({
   activeUser,
   getLocationComments,
   numberRate,
-  setCommentCount
+  setCommentCount,
+  isPost
 }) => {
   return (
     <>
@@ -26,6 +27,7 @@ const StoryComments = ({
                   count={count}
                   numberRate={numberRate}
                   setCommentCount={setCommentCount}
+                  isPost={isPost}
                 />
               );
             })}

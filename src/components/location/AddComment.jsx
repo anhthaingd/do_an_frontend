@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import "../../Css/AddComment.css";
 import StarRating from "./StarRating";
 import { createComment } from "../../apis/commentLocationApi";
-
+import { createCommentPost } from "../../apis/commentPostApi";
 const AddComment = ({
   setSidebarShowStatus,
   slug,
@@ -16,6 +16,7 @@ const AddComment = ({
   count,
   numberRate,
   setCommentCount,
+  isPost,
 }) => {
   const navigate = useNavigate();
   const textareaRef = useRef(null);
@@ -27,41 +28,79 @@ const AddComment = ({
   const [showStatus, setShowStatus] = useState(true);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const comment = {
-        content,
-        userID: activeUser.id,
-        locationID: slug,
-        star,
-      };
-      await createComment(comment);
+    if (isPost === false) {
+      e.preventDefault();
+      try {
+        const comment = {
+          content,
+          userID: activeUser.id,
+          locationID: slug,
+          star,
+        };
+        await createComment(comment);
 
-      setSuccess("Add Comment successfully ");
-      setTimeout(() => {
-        setSuccess("");
-      }, 2700);
+        setSuccess("Add Comment successfully ");
+        setTimeout(() => {
+          setSuccess("");
+        }, 2700);
 
-      setTimeout(() => {
-        if (star !== 0) {
-          document.querySelector(".rateCount").textContent = numberRate + 1;
+        setTimeout(() => {
+          // if (star !== 0) {
+          //   document.querySelector(".rateCount").textContent = numberRate + 1;
+          // }
+          // document.querySelector(".commentCount").textContent = count + 1;
+          setCommentCount(count + 1);
+        }, 650);
+
+        clearInputs();
+
+        getLocationComments();
+      } catch (error) {
+        if (error.response.data.error === "Jwt expired") {
+          console.log("token expired ...");
+          navigate("/");
         }
-        // document.querySelector(".commentCount").textContent = count + 1;
-        setCommentCount(count + 1);
-      }, 650);
-
-      clearInputs();
-
-      getLocationComments();
-    } catch (error) {
-      if (error.response.data.error === "Jwt expired") {
-        console.log("token expired ...");
-        navigate("/");
+        setError(error.response.data.error);
+        setTimeout(() => {
+          setError("");
+        }, 4500);
       }
-      setError(error.response.data.error);
-      setTimeout(() => {
-        setError("");
-      }, 4500);
+    } else {
+      e.preventDefault();
+      try {
+        const comment = {
+          content,
+          userID: activeUser.id,
+          postID: slug,
+        };
+        await createCommentPost(comment);
+
+        setSuccess("Add Comment successfully ");
+        setTimeout(() => {
+          setSuccess("");
+        }, 2700);
+
+        setTimeout(() => {
+          // if (star !== 0) {
+          //   document.querySelector(".rateCount").textContent = numberRate + 1;
+          // }
+          // document.querySelector(".commentCount").textContent = count + 1;
+          setCommentCount(count + 1);
+        }, 650);
+
+        clearInputs();
+
+        getLocationComments();
+      } catch (error) {
+        if (error.response.data.error === "Jwt expired") {
+          console.log("token expired ...");
+          navigate("/");
+        }
+        setError(error.response.data.error);
+        setTimeout(() => {
+          setError("");
+        }, 4500);
+      }
     }
   };
 
@@ -133,11 +172,15 @@ const AddComment = ({
               showStatus ? "form-bottom-block" : "form-bottom-block hidden"
             }
           >
-            <StarRating
-              setStar={setStar}
-              setStarCurrentVal={setStarCurrentVal}
-              starCurrentVal={starCurrentVal}
-            />
+            {isPost === false ? (
+              <StarRating
+                setStar={setStar}
+                setStarCurrentVal={setStarCurrentVal}
+                starCurrentVal={starCurrentVal}
+              />
+            ) : (
+              ""
+            )}
 
             <div className="formBtn-wrapper">
               <button

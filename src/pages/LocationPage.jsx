@@ -5,6 +5,7 @@ import LocationDetail from "./LocationDetail";
 import ListMatch from "../components/ListMatch";
 
 const LocationPage = () => {
+  const [activeTab, setActiveTab] = useState("1");
   const items = [
     {
       key: "1",
@@ -23,9 +24,18 @@ const LocationPage = () => {
   const changeTabPosition = (e) => {
     setTabPosition(e.target.value);
   };
+  const handleTabChange = (key) => {
+    setActiveTab(key);
+  };
   return (
-    <div className=" ">
-      <Tabs defaultActiveKey="1" tabPosition={tabPosition}>
+    <div className="h-3/4  min-h-[513px]" style={{  }}>
+      <Tabs
+        defaultActiveKey="1"
+        activeKey={activeTab}
+        tabPosition={tabPosition}
+        onChange={handleTabChange}
+        className="h-3/4"
+      >
         {items.map((item) => (
           <Tabs.TabPane tab={item.label} key={item.key} className="bgOfGroup">
             {item.content}

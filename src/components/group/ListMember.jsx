@@ -2,7 +2,10 @@ import React from "react";
 import avatar from "../../images/avatar.jpg";
 const ListMember = ({ listMember, group }) => {
   const owner = listMember.find((member) => member.userID === group.ownerID);
-  console.log(owner);
+  const nonOwners = listMember.filter(
+    (member) => member.userID !== group.ownerID
+  );
+  console.log(nonOwners);
   return (
     <div className="flex items-center justify-center">
       <div className="bg-white rounded w-3/4">
@@ -24,6 +27,20 @@ const ListMember = ({ listMember, group }) => {
           <div className="pt-4 flex items-center pl-2">
             <img src={avatar} className="w-12 rounded-full" alt="" />
             <p className="ml-3">{owner.user.username}</p>
+          </div>
+        </div>
+        <div className="p-2">
+          <p className="text-base font-medium">Thành viên khác</p>
+          <div className="pt-4  items-center pl-2">
+            {nonOwners.map((member, index) => (
+              <div
+                key={index}
+                className="text-sm text-gray-700 flex items-center pb-2"
+              >
+                <img src={avatar} className="w-12 rounded-full" alt="" />
+                <p className="ml-3">{member.user.username}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

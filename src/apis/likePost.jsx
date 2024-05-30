@@ -1,7 +1,7 @@
 import Api from "./baseApi";
 
-export const createGroup = (data) => {
-  return Api.post("/group", data)
+export const createLikePost = (like) => {
+  return Api.post(`/likepost`, like)
     .then((response) => {
       // Xử lý dữ liệu trả về từ response ở đây
       return response.data;
@@ -12,32 +12,26 @@ export const createGroup = (data) => {
     });
 };
 
-export const getGroupById = (id) => {
-  return Api.get(`/group/${id}`)
+export const deleteLikePost = (like) => {
+  return Api.delete(`/likepost`, { data: like })
     .then((response) => {
+      // Xử lý dữ liệu trả về từ response ở đây
       return response.data;
     })
     .catch((error) => {
+      // Xử lý lỗi ở đây
       throw error;
     });
 };
 
-export const searchGroup = (name) => {
-  return Api.get(`/group/search`, { params: name })
+export const getLikeByPostID = (postID) => {
+  return Api.get(`/likepost/postID/${postID}`)
     .then((response) => {
+      // Xử lý dữ liệu trả về từ response ở đây
       return response.data;
     })
     .catch((error) => {
+      // Xử lý lỗi ở đây
       throw error;
     });
 };
-
-export const getAllGroup = () => {
-  return Api.get("/group")
-    .then((response) => {
-      return response.data;
-    })
-    .catch((error) => {
-      throw error;
-    });
-}
