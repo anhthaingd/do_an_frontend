@@ -19,6 +19,7 @@ import {
   getPlaygroundByLocationID,
 } from "../apis/playgroundApi";
 import PlaygroundCard from "../components/cards/PlaygroundCard";
+import Map from "../components/map/Map";
 import { getUserById } from "../apis/userApi";
 import Modal from "antd/es/modal/Modal";
 import {
@@ -42,7 +43,8 @@ import {
   getLikeByLocationID,
 } from "../apis/likeLocationApi";
 import ModalEdit from "../components/location/ModalEdit";
-const LocationDetail = () => {
+import MapCantClick from "../components/map/MapCantClick";
+const LocationDetail = ({ setActiveTab }) => {
   const locationID = useParams().id;
   const [location, setLocation] = useState({});
   const [playgrounds, setPlaygrounds] = useState([]);
@@ -63,6 +65,13 @@ const LocationDetail = () => {
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
   const userID = localStorage.getItem("userId");
+  const [viewport, setViewport] = useState({
+    latitude: 21.0065649,
+    longitude: 105.8431364,
+    zoom: 16,
+    bearing: 0,
+    transitionDuration: 1000,
+  });
   const fetchActiveUser = async () => {
     try {
       const response = await getUserById(userID);
@@ -102,8 +111,16 @@ const LocationDetail = () => {
     try {
       const locationResponse = await getLocationById(locationID);
       setLocation(locationResponse.data);
-
+      console.log(locationResponse.data);
       setOwner(locationResponse.data.owner);
+      setViewport((prev) => {
+        return {
+          ...prev,
+          latitude: locationResponse?.data?.coordinates?.coordinates[1],
+          longitude: locationResponse?.data?.coordinates?.coordinates[0],
+          zoom: 16,
+        };
+      });
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -458,6 +475,10 @@ const LocationDetail = () => {
         okText="Có"
         cancelText="Không"
       ></Modal>
+      <p className="text-xl font-bold pt-4 pb-2">Đường đi</p>
+      <div style={{ width: "620px", height: "300px" }} className="">
+        <MapCantClick viewport={viewport} setViewport={setViewport} />
+      </div>
     </div>
   );
 };

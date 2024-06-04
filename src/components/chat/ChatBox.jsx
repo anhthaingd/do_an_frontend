@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { ChatContext } from "../../context/ChatContext";
 
-const ChatBox = () => {
-  const { messages } = useContext(ChatContext);
+const ChatBox = ({ messages }) => {
   const loginUserID = localStorage.getItem("userId");
   const messagesEndRef = useRef(null);
- 
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -15,7 +14,7 @@ const ChatBox = () => {
   return (
     <div className="h-full bg-gray-900">
       <div className="flex flex-col space-y-4 p-4 bg-gray-900 text-white ">
-        {messages.map((message, index) => {
+        {messages?.map((message, index) => {
           const isLoginUser = message.senderID == loginUserID;
           return (
             <div

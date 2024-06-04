@@ -206,14 +206,23 @@ const Header = () => {
                   alt="thai"
                 />
                 <div className="sub-profile-wrap  ">
-                  <Link className="profile-link" to="/profile">
-                    {" "}
-                    <FaUserEdit /> Profile{" "}
-                  </Link>
+                  <div>
+                    <p
+                      className="profile-link cursor-pointer flex items-center  "
+                      onClick={() => navigate(`profile/${userID}`)}
+                    >
+                      {" "}
+                      <FaUserEdit style={{ fontSize: "20px" }} />{" "}
+                      <p className=""> Profile </p>
+                    </p>
+                  </div>
 
-                  <button className="logout-btn" onClick={handleLogout}>
+                  <button
+                    className="logout-btn flex items-center"
+                    onClick={handleLogout}
+                  >
                     {" "}
-                    <BiLogOut /> Logout
+                    <BiLogOut style={{ fontSize: "20px" }} /> Thoát
                   </button>
                 </div>
               </div>

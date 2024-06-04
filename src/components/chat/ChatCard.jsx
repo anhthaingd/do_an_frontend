@@ -3,12 +3,20 @@ import avatar from "../../images/avatar.jpg";
 import { getMessageInboxHash } from "../../apis/chatApi";
 import { ChatContext } from "../../context/ChatContext";
 import { updateRoom } from "../../apis/roomApi";
-const ChatCard = ({ guest, room, fetchUser }) => {
+import { useNavigate } from "react-router-dom";
+const ChatCard = ({ guest, room }) => {
   const loginUserID = localStorage.getItem("userId");
-  const inboxHash1 = `${loginUserID}-${guest.id}`;
-  const inboxHash2 = `${guest.id}-${loginUserID}`;
-  const { setGuest, setMessages, setIsChange, isChange, onlineUsers } =
-    useContext(ChatContext);
+  const inboxHash1 = `${loginUserID}-${guest?.id}`;
+  const inboxHash2 = `${guest?.id}-${loginUserID}`;
+  const {
+    setGuest,
+    setMessages,
+    setIsChange,
+    isChange,
+    onlineUsers,
+    currentChat,
+    setRooms
+  } = useContext(ChatContext);
   const fetchMessage = async () => {
     try {
       let response = await getMessageInboxHash({
@@ -17,7 +25,6 @@ const ChatCard = ({ guest, room, fetchUser }) => {
       if (!response.data || response.data.length === 0) {
         // If no data with the first inbox hash, try with the second
         response = await getMessageInboxHash({
-          senderID: guest.id,
           inboxHash: inboxHash1,
         });
       }
@@ -27,22 +34,19 @@ const ChatCard = ({ guest, room, fetchUser }) => {
       console.error(error);
     }
   };
-  const handleClickChatCard = async () => {
-    fetchMessage();
-    const response = await updateRoom(room?.id);
-    fetchUser();
-  };
+  const navigate = useNavigate();
+ 
   useEffect(() => {}, []);
   return (
     <div
       className="user-card cursor-pointer hover:bg-gray-300 rounded"
-      onClick={handleClickChatCard}
+      onClick={() => navigate(`/chat/${room?.id}`)}
     >
       <div className="flex pt-5 justify-between">
         <div className="flex">
           <img src={avatar} alt="" className="w-12 h-12 rounded-full mr-1" />
           <div>
-            <div className="font-semibold">{guest.username}</div>
+            <div className="font-semibold">{guest?.username}</div>
             <div
               className={` text-sm ${
                 room?.unSeenNumbers > 0

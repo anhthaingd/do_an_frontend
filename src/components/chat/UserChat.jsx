@@ -27,6 +27,7 @@ const UserChat = ({ rooms, fetchUser }) => {
                 guest={item.receiver}
                 room={item}
                 fetchUser={fetchUser}
+                
               />
             </div>
           );

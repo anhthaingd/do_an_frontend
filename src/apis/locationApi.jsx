@@ -93,3 +93,22 @@ export const getAllLocation = () => {
       throw error;
     });
 };
+
+export const getLocationByGeoCodingAndRadius = async ({
+  latitude,
+  longitude,
+  type,
+}) => {
+  try {
+    return Api.get("/location/geocoding", {
+      params: {
+        longitude,
+        latitude,
+        type,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching location data:", error);
+    throw error;
+  }
+};

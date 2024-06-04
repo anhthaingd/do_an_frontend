@@ -7,7 +7,7 @@ const PotentialChat = ({ guest }) => {
     <div>
       <div className="relative w-16 ">
         <img src={avatar} alt="" className="w-10 rounded-full" />
-        {guest.username}
+        {guest?.username}
         <span
           className={
             onlineUsers?.some((user) => user?.userID === guest?.id)

@@ -10,6 +10,8 @@ import { Input, InputNumber, Select } from "antd";
 import dayjs from "dayjs";
 import Modal from "antd/es/modal/Modal";
 import axios from "axios";
+import Map from "../components/map/Map";
+import { getGeocodingByInput, getGeocodingByPlaceId } from "../apis/mapApi";
 const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
 const formats = "HH:mm";
 const MyLocation = () => {
@@ -38,6 +40,16 @@ const MyLocation = () => {
   const [ward, setWard] = useState("");
   const [districtArr, setDistrictArr] = useState([]);
   const [wardArr, setWardArr] = useState([]);
+  const [predictions, setPredictions] = useState([]);
+  const [lat, setLat] = useState(null);
+  const [lng, setLng] = useState(null);
+  const [viewport, setViewport] = useState({
+    latitude: 21.0065649,
+    longitude: 105.8431364,
+    zoom: 13,
+    bearing: 0,
+    transitionDuration: 1000,
+  });
   const fetchLocation = async () => {
     const response = await getLocationByUserID(userID);
     setListLocation(response.data);
@@ -49,6 +61,17 @@ const MyLocation = () => {
     if (result.status === 200) {
       setAddressData(result.data);
     }
+  };
+  const handleInput = async (e) => {
+    setLocationDetail(e.target.value);
+    try {
+      const response = await getGeocodingByInput({ input: e.target.value });
+      if (response.status === "OK") {
+        setPredictions(response.predictions);
+        console.log(response);
+      }
+      // console.log(response);
+    } catch (error) {}
   };
   useEffect(() => {
     fetchLocation();
@@ -104,6 +127,8 @@ const MyLocation = () => {
         location_detail: locationDetail,
         open_time: openTime,
         close_time: closeTime,
+        longitude: lng,
+        latitude: lat,
       };
       try {
         const response = await createLocation(location);
@@ -139,6 +164,28 @@ const MyLocation = () => {
       };
     }
   };
+  const handleClickPlace = async (place) => {
+    setLocationDetail(place.description);
+    const response = await getGeocodingByPlaceId({ placeId: place.place_id });
+    console.log(response);
+    if (response.status === "OK") {
+      setProvince(response.result.compound.province);
+      setDistrict(response.result.compound.district);
+      setWard(response.result.compound.commune);
+      setLat(response.result.geometry.location.lat);
+      setLng(response.result.geometry.location.lng);
+      setViewport((prev) => {
+        return {
+          ...prev,
+          latitude: response.result.geometry.location.lat,
+          longitude: response.result.geometry.location.lng,
+          zoom: 16,
+        };
+      });
+    }
+    setPredictions([]);
+  };
+
   return (
     <div>
       <div className="flex pl-6 pt-2">
@@ -258,7 +305,7 @@ const MyLocation = () => {
               </Select.Option> */}
             </Select>
           </Form.Item>
-          <Form.Item label="Vị trí">
+          {/* <Form.Item label="Vị trí">
             <div>
               <select
                 defaultValue={"a"}
@@ -311,13 +358,7 @@ const MyLocation = () => {
                 ))}
               </select>
             </div>
-          </Form.Item>
-          <Form.Item label="Nhập vị trí">
-            <Input
-              onChange={(e) => setLocationDetail(e.target.value)}
-              value={locationDetail}
-            />
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item label="Image ">
             <input
@@ -346,6 +387,32 @@ const MyLocation = () => {
               <></>
             )}
           </Form.Item>
+          <Form.Item label="Nhập vị trí">
+            <div className="relative">
+              <Input onChange={handleInput} value={locationDetail} />
+              <div className="absolute z-50 bg-white border border-gray-300">
+                {predictions.length > 0 &&
+                  predictions.map((item) => {
+                    return (
+                      <div
+                        key={item.place_id}
+                        className="cursor-pointer p-2 hover:bg-gray-200"
+                        onClick={() => handleClickPlace(item)}
+                      >
+                        {item.description}
+                      </div>
+                    );
+                  })}
+              </div>
+              <div
+                className="z-10 pt-4"
+                style={{ width: "620px", height: "300px" }}
+              >
+                <Map viewport={viewport} setViewport={setViewport} />
+              </div>
+            </div>
+          </Form.Item>
+          <Form.Item></Form.Item>
         </Form>
       </Modal>
     </div>

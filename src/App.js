@@ -18,6 +18,10 @@ import AllGroup from "./pages/AllGroup";
 import Profile from "./pages/Profile";
 import Chat from "./pages/Chat";
 import { ChatProvider } from "./context/ChatContext";
+import UserChat from "./components/chat/UserChat";
+import PrivateChat from "./components/chat/PrivateChat";
+import Map from "./components/map/Map";
+import ListMatch from "./components/ListMatch";
 function App() {
   const role = localStorage.getItem("role");
   return (
@@ -36,12 +40,16 @@ function App() {
                 />
               ))}
               <Route exact path="/" element={<Home />} />
-              <Route exact path="/location/:id" element={<LocationPage />} />
+              {/* <Route exact path="/location/:id" element={<LocationPage />} /> */}
               <Route exact path="/my_location" element={<MyLocation />} />
+              <Route exact path="/location" element={<LocationPage />}>
+                <Route exact path=":id" element={<LocationDetail />} />
+                <Route exact path=":id/booking" element={<ListMatch />} />
+              </Route>
               <Route exact path="/group/:id" element={<Group />} />
               <Route exact path="/groups" element={<AllGroup />} />
-              <Route exact path="/profile" element={<Profile />} />
-
+              <Route exact path="/profile/:id" element={<Profile />} />
+              <Route exact path="/map" element={<Map />} />
               <Route exact path="/change_Password">
                 <Route
                   exact
@@ -77,7 +85,10 @@ function App() {
             <Route exact path="/login" element={<LoginScreen />} />
             <Route exact path="/register" element={<RegisterScreen />} />
             <Route exact path="/admin" element={<AdminPage />} />
-            <Route exact path="/chat" element={<Chat />} />
+
+            <Route path="/chat" element={<Chat />}>
+              <Route exact path=":id" element={<PrivateChat />} />
+            </Route>
             <Route
               exact
               path="/forgotpassword"

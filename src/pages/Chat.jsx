@@ -9,23 +9,16 @@ import Header from "../components/generalScreen/Header";
 import SubHeader from "../components/generalScreen/SubHeader";
 import { getMessageInboxHash, sendMessage } from "../apis/chatApi";
 import { getRoomByUserID } from "../apis/roomApi";
+import { Outlet } from "react-router-dom";
 const Chat = () => {
-  const { guest, isChange, setMessages, setNewMessage } =
+  const { guest, isChange, setMessages, setNewMessage, rooms, setRooms } =
     useContext(ChatContext);
   const [inputValue, setInputValue] = useState("");
   const loginUserID = parseInt(localStorage.getItem("userId"), 10);
   const inboxHash1 = `${loginUserID}-${guest?.id}`;
   const inboxHash2 = `${guest?.id}-${loginUserID}`;
   const userID = localStorage.getItem("userId");
-  const [rooms, setRooms] = useState([]);
-  const fetchUser = async () => {
-    try {
-      const response = await getRoomByUserID(userID);
-      setRooms(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+
   const fetchMessage = async () => {
     try {
       let response = await getMessageInboxHash({
@@ -55,12 +48,21 @@ const Chat = () => {
         // setMessages((prev) => [...prev, response.data]);
       } catch (error) {}
       fetchMessage();
-      fetchUser();
+      // fetchUser();
       setInputValue("");
     }
   };
   const handleChange = (event) => {
     setInputValue(event.target.value);
+  };
+  const fetchUser = async () => {
+    try {
+      const response = await getRoomByUserID(loginUserID);
+      console.log(response.data);
+      setRooms(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
   const handleSubmit = async () => {
     try {
@@ -72,13 +74,13 @@ const Chat = () => {
       setNewMessage(response.data);
       // setMessages((prev) => [...prev, response.data]);
       fetchMessage();
-      fetchUser();
+      // fetchUser();
       setInputValue("");
     } catch (error) {}
     setInputValue("");
   };
   useEffect(() => {
-    fetchUser();
+    // fetchUser();
   }, []);
   return (
     <div className=" ">
@@ -89,40 +91,9 @@ const Chat = () => {
           className="w-1/3 p-5 border border-r-gray-400"
           style={{ maxHeight: "500px" }}
         >
-          <UserChat rooms={rooms} fetchUser={fetchUser} />
+          <UserChat rooms={rooms} />
         </div>
-        <div className="w-2/3 p-5  pt-2 ">
-          <div className="flex items-center pb-2 ">
-            <img src={avatar} alt="" className="w-10 rounded-full mr-1" />
-            <p className="text-xl font-semibold ">{guest?.username}</p>
-          </div>
-          <div className="h-full overflow-y-auto" style={{ height: "430px" }}>
-            <ChatBox />
-          </div>
-          <div>
-            <div className="w-full flex justify-center items-center content-center bg-gray-900 p-2">
-              <input
-                type="text"
-                value={inputValue}
-                placeholder="Nhập tin nhắn"
-                style={{ outline: "none" }}
-                className=" bg-gray-500 w-3/4 p-2 rounded-full text-white"
-                onChange={handleChange}
-                onKeyPress={handleKeyPress}
-              />
-              {inputValue !== "" ? (
-                <img
-                  src={send}
-                  alt=""
-                  className="w-6 h-6 ml-5 cursor-pointer"
-                  onClick={handleSubmit}
-                />
-              ) : (
-                ""
-              )}
-            </div>
-          </div>
-        </div>
+        <Outlet />
       </div>
     </div>
   );

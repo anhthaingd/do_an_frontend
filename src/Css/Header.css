@@ -155,7 +155,7 @@ header .logo h5 {
   z-index: 52;
 }
 
-.sub-profile-wrap a.profile-link {
+.sub-profile-wrap div p.profile-link {
   margin-bottom: 1.2rem;
   text-decoration: none;
   font-family: "Saira Condensed", sans-serif;

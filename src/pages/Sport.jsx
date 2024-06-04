@@ -8,6 +8,7 @@ import {
 import LocationList from "../components/LocationList";
 import useQueryParams from "../hooks/useQueryParams";
 import axios from "axios";
+import SearchModal from "../components/map/SearchModal";
 const Sport = ({ sportDetail }) => {
   const [params] = useSearchParams();
   const { queryParams, navigate } = useQueryParams();
@@ -25,6 +26,15 @@ const Sport = ({ sportDetail }) => {
   const addressDataWithDefaultOption = [{ Name: "Chọn tỉnh" }, ...addressData];
   const districtArrOption = [{ Name: "Chọn huyện" }, ...districtArr];
   const wardArrOption = [{ Name: "Chọn xã" }, ...wardArr];
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const openPopup = () => {
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
   const fetchLocation = async () => {
     try {
       const response = await getLocationByTypeLimit({
@@ -39,11 +49,12 @@ const Sport = ({ sportDetail }) => {
     }
   };
   const handleOnClickProvince = (e) => {
+    console.log(e.target.key);
     const selectedProvince = e.target.value;
     setProvince(selectedProvince);
-
+    const cleanName = (name) => name.replace(/Tỉnh|Thành phố/g, "").trim();
     const provinceData = addressData.find(
-      (item) => item.Name === selectedProvince
+      (item) => cleanName(item.Name) === cleanName(selectedProvince)
     );
     if (provinceData && provinceData.Districts) {
       setDistrictArr(provinceData.Districts);
@@ -66,9 +77,9 @@ const Sport = ({ sportDetail }) => {
   const handleOnClickDistrict = (e) => {
     const selectedDistrict = e.target.value;
     setDistrict(selectedDistrict);
-
+    const cleanedName = (name) => name.replace(/Quận|Huyện|Thị xã/g, "").trim();
     const districtData = districtArr.find(
-      (item) => item.Name === selectedDistrict
+      (item) => cleanedName(item.Name) === selectedDistrict
     );
     if (districtData && districtData.Wards) {
       setWardArr(districtData.Wards);
@@ -88,6 +99,7 @@ const Sport = ({ sportDetail }) => {
   };
   const handleOnClickWard = (e) => {
     setWard(e.target.value);
+
     let newSearchParams = {
       ...queryParams,
       ward: e.target.value,
@@ -135,17 +147,32 @@ const Sport = ({ sportDetail }) => {
         </div>
       </div>
       <div className="flex justify-end gap-3 pt-2 pr-5">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+          onClick={openPopup}
+        >
+          Tìm trên bản đồ
+        </button>
+        <SearchModal
+          isOpen={isPopupOpen}
+          onClose={closePopup}
+          type={sportDetail.type}
+        />
         <select
           defaultValue={"a"}
           value={province}
           className="w-52 p-3 border border-blue-500 outline-none rounded"
           onChange={handleOnClickProvince}
         >
-          {addressDataWithDefaultOption.map((item, index) => (
-            <option key={index} value={item.Name}>
-              {item.Name}
-            </option>
-          ))}
+          {addressDataWithDefaultOption.map((item, index) => {
+            // Remove "tỉnh" and "thành phố" from the item.Name if they exist
+            const cleanedName = item.Name.replace(/Tỉnh|Thành phố/g, "").trim();
+            return (
+              <option key={item.Id} value={cleanedName}>
+                {cleanedName}
+              </option>
+            );
+          })}
         </select>
 
         <select
@@ -153,11 +180,18 @@ const Sport = ({ sportDetail }) => {
           className="w-52 p-3 border border-blue-500 outline-none rounded"
           onChange={handleOnClickDistrict}
         >
-          {districtArrOption.map((item, index) => (
-            <option key={index} value={item.Name}>
-              {item.Name}
-            </option>
-          ))}
+          {districtArrOption.map((item, index) => {
+            // Remove "tỉnh" and "thành phố" from the item.Name if they exist
+            const cleanedName = item.Name.replace(
+              /Quận|Huyện|Thị xã/g,
+              ""
+            ).trim();
+            return (
+              <option key={item.Id} value={cleanedName}>
+                {cleanedName}
+              </option>
+            );
+          })}
         </select>
 
         <select
@@ -165,11 +199,18 @@ const Sport = ({ sportDetail }) => {
           className="w-52 p-3 border border-blue-500 outline-none rounded"
           onChange={handleOnClickWard}
         >
-          {wardArrOption.map((item, index) => (
-            <option key={index} value={item.Name}>
-              {item.Name}
-            </option>
-          ))}
+          {wardArrOption.map((item, index) => {
+            // Remove "tỉnh" and "thành phố" from the item.Name if they exist
+            const cleanedName = item.Name.replace(
+              /Phường|Xã|Thị trấn/g,
+              ""
+            ).trim();
+            return (
+              <option key={item.Id} value={cleanedName}>
+                {cleanedName}
+              </option>
+            );
+          })}
         </select>
       </div>
       <div>

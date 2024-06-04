@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import "../Css/Profile.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import { getUserById } from "../apis/userApi";
 
 const Profile = () => {
   const [user, setUser] = useState({});
+  const userIDparam = useParams().id;
+  const role = localStorage.getItem("role");
   const [loading, setLoading] = useState(true);
   const userId = localStorage.getItem("userId");
   const editDate = (createdAt) => {
@@ -44,11 +46,26 @@ const Profile = () => {
   return (
     <>
       <div className="Inclusive_profile_page">
-        <Link to={"/"}>
+        <p
+          className="cursor-pointer"
+          onClick={() => {
+            role == 2 ? navigate("/admin") : navigate("/");
+          }}
+        >
           <FiArrowLeft />
-        </Link>
+        </p>
+
         <div className="profile-top-wrap">
           <span>Membership Information</span>
+          {userIDparam == userId ? (
+            <div className="btns_wrap">
+              <button className="profileEditBtn">
+                <Link to="/edit_profile">Edit Profile</Link>
+              </button>
+            </div>
+          ) : (
+            ""
+          )}
         </div>
         <ul>
           <li>
@@ -64,12 +81,6 @@ const Profile = () => {
             <div>{editDate(user.createdAt)}</div>
           </li>
         </ul>
-
-        <div className="btns_wrap">
-          <button className="profileEditBtn">
-            <Link to="/edit_profile">Edit Profile</Link>
-          </button>
-        </div>
       </div>
     </>
   );

@@ -39,8 +39,8 @@ const Home = () => {
           <div className="h-96 w-full">
             <img src={banner1} alt="" className="w-full h-full" />
           </div>
-          <div>
-            <img src={banner2} alt="" />
+          <div className="h-96 w-full">
+            <img src={banner2} alt="" className="w-full h-full" />
           </div>
         </Carousel>
       </div>

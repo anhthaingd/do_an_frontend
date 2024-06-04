@@ -21,7 +21,7 @@ const ManageUser = ({ type }) => {
       key: "action",
       render: (data) => {
         return (
-          <Link to={`/systems/${data.key}`} target="_blank">
+          <Link to={`/profile/${data.key}`} target="_blank">
             {data.username}
           </Link>
         );

@@ -55,7 +55,7 @@ const ManageLocation = () => {
       key: "action",
       render: (data) => {
         return (
-          <Link to={`/systems/${data.key}`} target="_blank">
+          <Link to={`/location/${data.id}`} target="_blank">
             {data.name}
           </Link>
         );

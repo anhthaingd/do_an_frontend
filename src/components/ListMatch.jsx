@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import MatchCard from "./cards/MatchCard";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
-const ListMatch = () => {
+const ListMatch = ({ setActiveTab }) => {
   const locationID = useParams().id;
   const [listMatch, setListMatch] = useState([]);
   const fetchMatch = async (date, locationID) => {
@@ -22,7 +22,6 @@ const ListMatch = () => {
   useEffect(() => {
     fetchMatch(date, locationID);
   }, []);
-  console.log(listMatch);
   return (
     <div className="pt-5 ">
       <DatePicker
