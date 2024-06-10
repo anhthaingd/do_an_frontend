@@ -32,7 +32,6 @@ export const getMatchByDateAndLocationID = (date, locationID) => {
     });
 };
 
-
 export const updateMatch = (id, data) => {
   return Api.put(`/match/${id}`, data)
     .then((response) => {
@@ -41,7 +40,7 @@ export const updateMatch = (id, data) => {
     .catch((error) => {
       throw error;
     });
-}
+};
 
 export const deleteMatch = (id) => {
   return Api.delete(`/match/${id}`)
@@ -51,4 +50,24 @@ export const deleteMatch = (id) => {
     .catch((error) => {
       throw error;
     });
-}
+};
+
+export const getMatchByUserID = (userID) => {
+  return Api.get(`/match/user/${userID}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const getMatchByID = (id) => {
+  return Api.get(`/match/${id}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+};

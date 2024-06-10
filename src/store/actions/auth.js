@@ -1,14 +1,15 @@
 import actionTypes from "./actionTypes";
 import { apiLogin, apiRegister } from "../../services/auth";
+import { createInformation } from "../../apis/informationApi";
 export const register = (payload) => async (dispatch) => {
   try {
     const response = await apiRegister(payload);
-    console.log(response);
+    
     if (response?.data.err === 0) {
       dispatch({
         type: actionTypes.REGISTER_SUCCESS,
         data: response.data.token,
-        loginUserIDRd: response.data.id,
+        loginUserIDRd: response.data.userId,
       });
     } else {
       dispatch({

@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import LoginScreen from "./pages/Login";
 import RegisterScreen from "./pages/Register";
@@ -22,6 +27,14 @@ import UserChat from "./components/chat/UserChat";
 import PrivateChat from "./components/chat/PrivateChat";
 import Map from "./components/map/Map";
 import ListMatch from "./components/ListMatch";
+import PostList from "./components/profile/PostList";
+import About from "./components/profile/About";
+import History from "./components/profile/History";
+import LivingPlace from "./components/profile/about/LivingPlace";
+import Overview from "./components/profile/about/Overview";
+import Contact from "./components/profile/about/Contact";
+import Job from "./components/profile/about/Job";
+import FindPlayer from "./pages/FindPlayer";
 function App() {
   const role = localStorage.getItem("role");
   return (
@@ -48,7 +61,18 @@ function App() {
               </Route>
               <Route exact path="/group/:id" element={<Group />} />
               <Route exact path="/groups" element={<AllGroup />} />
-              <Route exact path="/profile/:id" element={<Profile />} />
+              <Route exact path="/search" element={<FindPlayer />} />
+              <Route exact path="/profile" element={<Profile />}>
+                <Route exact path=":id" element={<PostList />} />
+                <Route exact path=":id/about" element={<About />}>
+                  <Route path="" element={<Navigate to="overview" replace />} />
+                  <Route exact path="living" element={<LivingPlace />} />
+                  <Route exact path="overview" element={<Overview />} />
+                  <Route exact path="contact" element={<Contact />} />
+                  <Route exact path="job" element={<Job />} />
+                </Route>
+                <Route exact path=":id/history" element={<History />} />
+              </Route>
               <Route exact path="/map" element={<Map />} />
               <Route exact path="/change_Password">
                 <Route

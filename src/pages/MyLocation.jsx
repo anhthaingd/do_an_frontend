@@ -4,7 +4,7 @@ import LocationCard from "../components/cards/LocationCard";
 import { PlusOutlined } from "@ant-design/icons";
 import { Button, DatePicker, Flex, Form, TimePicker } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
-import { format } from "date-fns";
+// import { format } from "date-fns";
 import { Input, InputNumber, Select } from "antd";
 
 import dayjs from "dayjs";
@@ -258,7 +258,7 @@ const MyLocation = () => {
           <Form.Item label="Name">
             <Input onChange={(e) => setName(e.target.value)} value={name} />
           </Form.Item>
-          <Form.Item label="Thời gian mở cửa">
+          {/* <Form.Item label="Thời gian mở cửa">
             <div className="">
               <TimePicker.RangePicker
                 format={formats}
@@ -270,7 +270,7 @@ const MyLocation = () => {
                 }}
               />
             </div>
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item label="Sale">
             <InputNumber onChange={(value) => setSale(value)} value={sale} />
           </Form.Item>

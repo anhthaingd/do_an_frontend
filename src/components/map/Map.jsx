@@ -40,7 +40,6 @@ const scaleControlStyle = {
 };
 
 const Map = ({ viewport, setViewport, setResultClick, nearByLocation }) => {
-  console.log("nearByLocation", nearByLocation);
   //   const [viewport, setViewport] = useState({
   //     latitude: 21.0065649,
   //     longitude: 105.8431364,

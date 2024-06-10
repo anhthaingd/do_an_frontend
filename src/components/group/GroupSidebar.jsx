@@ -45,7 +45,7 @@ const GroupSidebar = ({ isOpen, onClose, dropdownRef }) => {
           </p>
         </div>
         <div className="mt-4">
-          {groups.map((group, index) => (
+          {groups?.map((group, index) => (
             <div
               key={index}
               className="flex items-center justify-between py-2 border-b border-gray-700"

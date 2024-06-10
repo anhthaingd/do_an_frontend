@@ -17,6 +17,7 @@ import { createGroup } from "../../apis/groupApi";
 import { createMember } from "../../apis/memberApi";
 import GroupSidebar from "../group/GroupSidebar";
 import useQueryParams from "../../hooks/useQueryParams";
+import { createInformation } from "../../apis/informationApi";
 const Header = () => {
   const { queryParams, navigate } = useQueryParams();
   const userID = localStorage.getItem("userId");
@@ -145,6 +146,7 @@ const Header = () => {
       setIsSidebarOpen(false);
     }
   };
+
   return (
     <header>
       <div className="averager">
@@ -156,6 +158,12 @@ const Header = () => {
         <div className="header_options">
           {isLoggedIn ? (
             <div className="auth_options">
+              <button
+                className="addStory-link pt-2"
+                onClick={() => navigate("/search")}
+              >
+                Tìm kiếm người chơi
+              </button>
               <button className="addStory-link pt-2" onClick={showModal}>
                 Tạo nhóm mới
               </button>

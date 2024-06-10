@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import "../Css/Profile.css";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import { getUserById } from "../apis/userApi";
+import ProfileHeader from "../components/profile/ProfileHeader";
+import ProfileNavBar from "../components/profile/ProfileNavBar";
+import PostList from "../components/profile/PostList";
 
 const Profile = () => {
   const [user, setUser] = useState({});
@@ -44,45 +47,15 @@ const Profile = () => {
   }, [setLoading]);
 
   return (
-    <>
-      <div className="Inclusive_profile_page">
-        <p
-          className="cursor-pointer"
-          onClick={() => {
-            role == 2 ? navigate("/admin") : navigate("/");
-          }}
-        >
-          <FiArrowLeft />
-        </p>
-
-        <div className="profile-top-wrap">
-          <span>Membership Information</span>
-          {userIDparam == userId ? (
-            <div className="btns_wrap">
-              <button className="profileEditBtn">
-                <Link to="/edit_profile">Edit Profile</Link>
-              </button>
-            </div>
-          ) : (
-            ""
-          )}
+    <div className="flex justify-center ">
+      <div className=" " style={{ width: "940px" }}>
+        <ProfileHeader />
+        <ProfileNavBar userId={userId} />
+        <div className="flex justify-between">
+          <Outlet />
         </div>
-        <ul>
-          <li>
-            <span>Username</span>
-            <div>{user.username}</div>
-          </li>
-          <li>
-            <span>E-Mail</span>
-            <div>{user.email}</div>
-          </li>
-          <li>
-            <span> Account Created Date </span>
-            <div>{editDate(user.createdAt)}</div>
-          </li>
-        </ul>
       </div>
-    </>
+    </div>
   );
 };
 

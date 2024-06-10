@@ -15,10 +15,9 @@ import { useParams } from "react-router-dom";
 import { getUserById } from "../../apis/userApi";
 import CommentSidebar from "../location/CommentSidebar";
 import { getCommentsByPostID } from "../../apis/commentPostApi";
-import EditableField from "../modal/EditableField";
 import { getMatchByID } from "../../apis/matchApi";
-const PostCard = ({ post }) => {
-  console.log(post);
+import EditableField from "../modal/EditableField";
+const PostItem = ({ post }) => {
   const userID = localStorage.getItem("userId");
   const [activeUser, setActiveUser] = useState({});
   const [likeStatus, setLikeStatus] = useState(false);
@@ -77,14 +76,6 @@ const PostCard = ({ post }) => {
     setLikeStatus(!likeStatus);
     fetchCountLike();
   };
-  const fetchDetailMatch = async () => {
-    try {
-      const response = await getMatchByID(post?.matchID);
-      setDetailMatch(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const getPostComments = async () => {
     try {
       const { data } = await getCommentsByPostID(post.id);
@@ -96,19 +87,29 @@ const PostCard = ({ post }) => {
       console.log(error.response.data.error);
     }
   };
+  const fetchDetailMatch = async () => {
+    try {
+      const response = await getMatchByID(post?.matchID);
+      setDetailMatch(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  console.log(detailMatch);
   useEffect(() => {
     fetchActiveUser();
     fetchCountLike();
     getPostComments();
     fetchDetailMatch();
   }, [likeCount]);
+
   return (
     <div className="p-4 bg-white mb-4 rounded-md">
       <div className="flex items-center">
         <img src={avatar} alt="" className="w-10 rounded-full" />
         <div>
           <p className="ml-1 font-semibold " style={{ fontSize: "17px" }}>
-            {post?.user?.username}
+            {post?.writer?.username}
           </p>
           <p className="ml-1 text-gray-500" style={{ fontSize: "13px" }}>
             {editDate(post.createdAt)}
@@ -185,13 +186,36 @@ const PostCard = ({ post }) => {
             }}
           >
             <div className="absolute inset-0 flex items-center justify-center">
-              <h1 className="text-black text-3xl font-bold">{post.content}</h1>
+              <h1 className="text-black text-3xl font-bold">{post?.content}</h1>
             </div>
           </div>
         </div>
       )}
+      {/* {post.image ? (
+        <div>
+          <p>{post.content}</p>
+          <img
+            src={post.image}
+            alt=""
+            className="w-full h-5/6 rounded-md mt-4 "
+          />
+        </div>
+      ) : (
+        <div className="" style={{ height: "300px" }}>
+          <div
+            className="relative w-full h-full bg-cover bg-center rounded-md mt-4 "
+            style={{
+              backgroundImage: "linear-gradient(red, yellow, blue)",
+            }}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <h1 className="text-black text-3xl font-bold">{post?.content}</h1>
+            </div>
+          </div>
+        </div>
+      )} */}
       <div className="border-2 pb-2 border-b-gray-300">
-        <div className="flex justify-between pt-1">
+        {/* <div className="flex justify-between pt-1">
           <div className="flex pl-4">
             <LikeTwoTone style={{ fontSize: "20px" }} />
 
@@ -207,10 +231,10 @@ const PostCard = ({ post }) => {
             <p className="font-semibold text-gray-800 mr-1">{commentCount}</p>
             <CommentOutlined style={{ fontSize: "20px" }} className="pr-5" />
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="grid grid-cols-2 border-2 border-b-gray-300">
-        <div className=" p-1 rounded-md" onClick={handleLike}>
+        {/* <div className=" p-1 rounded-md" onClick={handleLike}>
           {likeStatus ? (
             <div className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md">
               <LikeOutlined style={{ fontSize: "24px", color: "blue" }} />
@@ -241,10 +265,10 @@ const PostCard = ({ post }) => {
             setCommentCount={setCommentCount}
             isPost={true}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );
 };
 
-export default PostCard;
+export default PostItem;

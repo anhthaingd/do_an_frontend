@@ -8,6 +8,7 @@ import { apiRegister } from "../services/auth";
 import * as actions from "../store/actions";
 import { UseDispatch, useDispatch, useSelector } from "react-redux";
 import { Button, Flex, Form, Radio, Input, Select } from "antd";
+import { createInformation } from "../apis/informationApi";
 const Register = () => {
   const location = useLocation();
   const [username, setUsername] = useState("");
@@ -23,13 +24,23 @@ const Register = () => {
   const [isRegister, setIsReegister] = useState(location.state?.flag);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn, loginUserIDRd } = useSelector((state) => state.auth);
 
   const handleChangeRole = (event) => {
     setRole(parseInt(event.target.value, 10));
   };
-
+  const createInfor = async () => {
+    try {
+      const response = await createInformation({
+        userID: loginUserIDRd,
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
+    if (isLoggedIn) createInfor();
     isLoggedIn && navigate("/");
   }, [isLoggedIn]);
   const registerHandler = async (e) => {

@@ -1,4 +1,5 @@
 import axiosConfig from "../apis/axiosConfig";
+import { createInformation } from "../apis/informationApi";
 
 export const apiRegister = (payload) =>
   new Promise(async (resolve, reject) => {
@@ -9,6 +10,7 @@ export const apiRegister = (payload) =>
         data: payload,
       });
       localStorage.setItem("userId", response.data.userId);
+
       resolve(response);
     } catch (error) {
       reject(error);
