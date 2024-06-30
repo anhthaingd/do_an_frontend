@@ -18,7 +18,6 @@ import { getCommentsByPostID } from "../../apis/commentPostApi";
 import EditableField from "../modal/EditableField";
 import { getMatchByID } from "../../apis/matchApi";
 const PostCard = ({ post }) => {
-  console.log(post);
   const userID = localStorage.getItem("userId");
   const [activeUser, setActiveUser] = useState({});
   const [likeStatus, setLikeStatus] = useState(false);
@@ -240,6 +239,7 @@ const PostCard = ({ post }) => {
             activeUser={activeUser}
             setCommentCount={setCommentCount}
             isPost={true}
+            isUserPost={false}
           />
         </div>
       </div>

@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { deleteLocation, getLocationById } from "../apis/locationApi";
+import {
+  deleteLocation,
+  getLocationById,
+  updateLocation,
+} from "../apis/locationApi";
 import {
   AimOutlined,
   CarOutlined,
@@ -44,6 +48,7 @@ import {
 } from "../apis/likeLocationApi";
 import ModalEdit from "../components/location/ModalEdit";
 import MapCantClick from "../components/map/MapCantClick";
+import { useSelector } from "react-redux";
 const LocationDetail = ({ setActiveTab }) => {
   const locationID = useParams().id;
   const [location, setLocation] = useState({});
@@ -63,7 +68,7 @@ const LocationDetail = ({ setActiveTab }) => {
   const [likeStatus, setLikeStatus] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const navigate = useNavigate();
-  const role = localStorage.getItem("role");
+  const { role, loginUserIDRd } = useSelector((state) => state.auth);
   const userID = localStorage.getItem("userId");
   const [viewport, setViewport] = useState({
     latitude: 21.0065649,
@@ -107,11 +112,14 @@ const LocationDetail = ({ setActiveTab }) => {
   };
   let totalStars = calculateTotalStars(commentList);
   let averageStars = (totalStars / numberRate).toFixed(1);
+  const handleUpdateLocation = async () => {
+    const res = await updateLocation(locationID, { rating: averageStars });
+    console.log(res);
+  };
   const fetchData = async () => {
     try {
       const locationResponse = await getLocationById(locationID);
       setLocation(locationResponse.data);
-      console.log(locationResponse.data);
       setOwner(locationResponse.data.owner);
       setViewport((prev) => {
         return {
@@ -132,6 +140,7 @@ const LocationDetail = ({ setActiveTab }) => {
     getLocationComments();
     fetchCountLike();
     setAveStar(isNaN(averageStars) ? 0 : averageStars);
+    handleUpdateLocation();
   }, [commentCount, numberRate, averageStars, likeCount]);
   const savePlayground = async () => {
     setLoading(true);
@@ -228,7 +237,7 @@ const LocationDetail = ({ setActiveTab }) => {
             <p className="text-2xl font-bold">{location.name}</p>
             <div className="flex text-center">
               <AimOutlined className="pt-1 pr-3" style={{ fontSize: "26px" }} />
-              <p className="text-xl pt-1 flex text-center">
+              <p className="text-md pt-1 flex text-center w-full">
                 {location.location_detail}
               </p>
             </div>
@@ -275,7 +284,7 @@ const LocationDetail = ({ setActiveTab }) => {
           </div>
           <div className="w-1/3">
             <div className="flex pl-8 pb-6">
-              <div className="flex">
+              <div className="flex items-center">
                 <p className="text-lg ">Đánh giá: {aveStar}</p>
                 <svg
                   viewBox="0 0 24 24"
@@ -332,12 +341,12 @@ const LocationDetail = ({ setActiveTab }) => {
               <div className="flex justify-between pr-5 ">
                 <p className="">Giờ mờ cửa:</p>
                 <p className="font-semibold">
-                  {getTime(location.open_time)} - {getTime(location.close_time)}
+                  {location.open_time} - {location.close_time}
                 </p>
               </div>
               <div className="flex justify-between pr-5">
                 <p>Số sân:</p>
-                <p className="font-semibold">{playgrounds.length} San</p>
+                <p className="font-semibold">{playgrounds.length} Sân</p>
               </div>
               <div className="flex justify-between pr-5">
                 <p>Liên hê:</p>
@@ -465,6 +474,7 @@ const LocationDetail = ({ setActiveTab }) => {
           numberRate={numberRate}
           setCommentCount={setCommentCount}
           isPost={false}
+          aveStar={aveStar}
         />
       </div>
       <Modal

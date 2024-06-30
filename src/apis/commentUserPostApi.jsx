@@ -1,7 +1,7 @@
 import Api from "./baseApi";
 
-export const createHobby = (data) => {
-  return Api.post("/hobby", data)
+export const getCommentsByUserPostID = (UserPostID) => {
+  return Api.get(`/commentUserPost/userPostID/${UserPostID}`)
     .then((response) => {
       // Xử lý dữ liệu trả về từ response ở đây
       return response.data;
@@ -12,8 +12,8 @@ export const createHobby = (data) => {
     });
 };
 
-export const deleteHobby = (hobby) => {
-  return Api.delete(`/hobby`, { data: hobby })
+export const createCommentUserPost = (comment) => {
+  return Api.post(`/commentUserPost`, comment)
     .then((response) => {
       // Xử lý dữ liệu trả về từ response ở đây
       return response.data;
@@ -24,20 +24,8 @@ export const deleteHobby = (hobby) => {
     });
 };
 
-export const getHobbyByUserID = (userID) => {
-  return Api.get(`/hobby/${userID}`)
-    .then((response) => {
-      // Xử lý dữ liệu trả về từ response ở đây
-      return response.data;
-    })
-    .catch((error) => {
-      // Xử lý lỗi ở đây
-      throw error;
-    });
-};
-
-export const searchHobby = (params) => {
-  return Api.get("/hobby", { params })
+export const deleteCommentUserPost = (commentId) => {
+  return Api.delete(`/commentUserPost/${commentId}`)
     .then((response) => {
       // Xử lý dữ liệu trả về từ response ở đây
       return response.data;

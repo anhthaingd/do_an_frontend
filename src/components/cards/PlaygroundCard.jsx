@@ -4,7 +4,7 @@ import {
   EuroCircleOutlined,
   FunnelPlotOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Form, Input, InputNumber, Select } from "antd";
+import { Button, Card, Form, Input, InputNumber, Select, Switch } from "antd";
 import Modal from "antd/es/modal/Modal";
 import React, { useEffect, useState } from "react";
 import { DatePicker, Space, message } from "antd";
@@ -20,6 +20,7 @@ import {
 } from "../../apis/matchApi";
 import { useNavigate, useParams } from "react-router-dom";
 import { deletePlayground } from "../../apis/playgroundApi";
+import { toast } from "react-toastify";
 const format = "HH:mm";
 dayjs.extend(customParseFormat);
 const { RangePicker } = DatePicker;
@@ -47,6 +48,7 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
   const [listMatchByDate, setListMatchByDate] = useState([]);
   const [disableButton, setDisableButton] = useState(false);
   const [checkStartTime, setCheckStartTime] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
   const navigate = useNavigate();
   const showModal = () => {
     ownerID == userID ? setIsOpenEdit(true) : setIsModalOpen(true);
@@ -99,8 +101,14 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
         end_time: endTime,
         price: roundTime(startTime, endTime) * playground.price,
         status: 0,
+        isPublic,
       };
-      createMatch(data);
+      const res = await createMatch(data);
+      if (res.success) {
+        toast.success("Đặt sân thành công");
+      } else {
+        toast.error(res.message);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -219,7 +227,6 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
         const existingEnd = dayjs(item.end_time, "HH:mm");
         return newEnd.isAfter(existingStart) && newEnd.isBefore(existingEnd);
       });
-      console.log("ov", isTimeRangeOverlap());
       if (overlaps) {
         message.error("Khoảng thời gian này đã có người khác đặt");
         setDisableButton(true); // Disable the button if there's an overlap
@@ -319,6 +326,10 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleSwitch = (checked) => {
+    setIsPublic(checked);
   };
   useEffect(() => {
     fetchUser();
@@ -431,18 +442,22 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
         <div className="flex">
           <div className="w-1/3">
             <p className="p-1">Sân:</p>
-            <p className="p-1">Khach hang</p>
-            <p className="p-1">So dien thoai</p>
-            <p className="p-1">Ngay dat</p>
-            <p className="p-1 pt-3">Bat dau</p>
-            <p className="p-1 pt-3">Ket thuc</p>
-            <p className="p-1 pt-3">Gia</p>
-            <p className="p-1">San da dat</p>
+            <p className="p-1">Khách hàng</p>
+            <p className="p-1">Số điện thoại</p>
+            <p className="p-1">Công khai</p>
+            <p className="p-1">Ngày đặt</p>
+            <p className="p-1 pt-3">Bắt đầu</p>
+            <p className="p-1 pt-3">Kết thúc</p>
+            <p className="p-1 pt-3">Giá</p>
+            <p className="p-1">Sân đã đặt</p>
           </div>
           <div className="w-2/3 ">
             <p className="p-1 text-red-500">{playground.name}</p>
             <p className="p-1">{user?.username}</p>
             <p className="p-1">{user?.phone}</p>
+            <p className="p-1">
+              <Switch defaultChecked onChange={handleSwitch} />
+            </p>
             <DatePicker
               format={"DD-MM-YYYY"}
               disabledDate={disabledDate}

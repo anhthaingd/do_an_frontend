@@ -49,7 +49,6 @@ const Sport = ({ sportDetail }) => {
     }
   };
   const handleOnClickProvince = (e) => {
-    console.log(e.target.key);
     const selectedProvince = e.target.value;
     setProvince(selectedProvince);
     const cleanName = (name) => name.replace(/Tỉnh|Thành phố/g, "").trim();

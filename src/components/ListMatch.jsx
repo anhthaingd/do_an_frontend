@@ -23,7 +23,7 @@ const ListMatch = ({ setActiveTab }) => {
     fetchMatch(date, locationID);
   }, []);
   return (
-    <div className="pt-5 ">
+    <div className="pt-5 z-10">
       <DatePicker
         status="error"
         format={dateFormatList}
@@ -36,11 +36,7 @@ const ListMatch = ({ setActiveTab }) => {
       <div className="grid grid-cols-2 gap-2 pt-3">
         {listMatch?.map((item, index) => {
           return (
-            <div
-              key={index}
-              className="flex items-center justify-center "
-              style={{ zIndex: 20 }}
-            >
+            <div key={index} className="flex items-center justify-center ">
               <MatchCard
                 match={item}
                 index={index}

@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+
 import { Outlet } from "react-router-dom";
 import LoginScreen from "./pages/Login";
 import RegisterScreen from "./pages/Register";
@@ -35,10 +36,13 @@ import Overview from "./components/profile/about/Overview";
 import Contact from "./components/profile/about/Contact";
 import Job from "./components/profile/about/Job";
 import FindPlayer from "./pages/FindPlayer";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
   const role = localStorage.getItem("role");
   return (
     <ChatProvider>
+      <ToastContainer />
       <Router>
         <div className="App">
           <Routes>

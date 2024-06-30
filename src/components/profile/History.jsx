@@ -17,7 +17,6 @@ const History = () => {
   useEffect(() => {
     fetchMatch();
   }, []);
-  console.log(listMatch);
   return (
     <div className="w-4/5">
       <div className="w-full gap-2 pt-3 pb-3">

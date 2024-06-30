@@ -23,7 +23,7 @@ const Header = () => {
   const userID = localStorage.getItem("userId");
   const dispatch = useDispatch();
   const bool = localStorage.getItem("authToken") ? true : false;
-  const role = localStorage.getItem("role");
+  const { role } = useSelector((state) => state.auth);
   const [auth, setAuth] = useState(bool);
   const { isLoggedIn } = useSelector((state) => state.auth);
   // const { activeUser } = useContext(AuthContext)
@@ -217,7 +217,7 @@ const Header = () => {
                   <div>
                     <p
                       className="profile-link cursor-pointer flex items-center  "
-                      onClick={() => navigate(`profile/${userID}`)}
+                      onClick={() => navigate(`/profile/${userID}`)}
                     >
                       {" "}
                       <FaUserEdit style={{ fontSize: "20px" }} />{" "}

@@ -17,6 +17,15 @@ import CommentSidebar from "../location/CommentSidebar";
 import { getCommentsByPostID } from "../../apis/commentPostApi";
 import { getMatchByID } from "../../apis/matchApi";
 import EditableField from "../modal/EditableField";
+import {
+  deleteCommentUserPost,
+  getCommentsByUserPostID,
+} from "../../apis/commentUserPostApi";
+import {
+  createLikeUserPost,
+  deleteLikeUserPost,
+  getLikeByUserPostID,
+} from "../../apis/likeUserPostApi";
 const PostItem = ({ post }) => {
   const userID = localStorage.getItem("userId");
   const [activeUser, setActiveUser] = useState({});
@@ -55,20 +64,20 @@ const PostItem = ({ post }) => {
   };
 
   const fetchCountLike = async () => {
-    const response = await getLikeByPostID(post.id);
+    const response = await getLikeByUserPostID(post.id);
     const isLikedArray = response.data.map((like) => {
-      return like.userID == activeUser.id && like.postID == post.id;
+      return like.userID == activeUser.id && like.userPostID == post.id;
     });
     const isLiked = isLikedArray.some((liked) => liked);
     setLikeStatus(isLiked);
     setLikeCount(response.data.length);
   };
   const handleLike = async () => {
-    const data = { userID: activeUser.id, postID: post.id };
+    const data = { userID: activeUser.id, userPostID: post.id };
     if (likeStatus === false) {
-      await createLikePost(data);
+      await createLikeUserPost(data);
     } else {
-      await deleteLikePost(data);
+      await deleteLikeUserPost(data);
     }
     // setTimeout(() => {
     //   setLikeStatus(!likeStatus);
@@ -78,7 +87,7 @@ const PostItem = ({ post }) => {
   };
   const getPostComments = async () => {
     try {
-      const { data } = await getCommentsByPostID(post.id);
+      const { data } = await getCommentsByUserPostID(post.id);
       if (data) {
         setCommentCount(data.length);
         const filteredData = data.filter((comment) => comment.star !== 0);
@@ -87,6 +96,7 @@ const PostItem = ({ post }) => {
       console.log(error.response.data.error);
     }
   };
+  console.log(likeStatus);
   const fetchDetailMatch = async () => {
     try {
       const response = await getMatchByID(post?.matchID);
@@ -95,7 +105,6 @@ const PostItem = ({ post }) => {
       console.log(error);
     }
   };
-  console.log(detailMatch);
   useEffect(() => {
     fetchActiveUser();
     fetchCountLike();
@@ -191,33 +200,13 @@ const PostItem = ({ post }) => {
           </div>
         </div>
       )}
-      {/* {post.image ? (
-        <div>
-          <p>{post.content}</p>
-          <img
-            src={post.image}
-            alt=""
-            className="w-full h-5/6 rounded-md mt-4 "
-          />
-        </div>
-      ) : (
-        <div className="" style={{ height: "300px" }}>
-          <div
-            className="relative w-full h-full bg-cover bg-center rounded-md mt-4 "
-            style={{
-              backgroundImage: "linear-gradient(red, yellow, blue)",
-            }}
-          >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <h1 className="text-black text-3xl font-bold">{post?.content}</h1>
-            </div>
-          </div>
-        </div>
-      )} */}
+
       <div className="border-2 pb-2 border-b-gray-300">
-        {/* <div className="flex justify-between pt-1">
-          <div className="flex pl-4">
-            <LikeTwoTone style={{ fontSize: "20px" }} />
+        <div className="flex justify-between pt-1">
+          <div className="flex pl-4 items-center justify-center">
+            <p>
+              <LikeTwoTone style={{ fontSize: "20px" }} />
+            </p>
 
             {likeStatus === true ? (
               <p className="font-semibold text-gray-800 ml-1">
@@ -231,10 +220,10 @@ const PostItem = ({ post }) => {
             <p className="font-semibold text-gray-800 mr-1">{commentCount}</p>
             <CommentOutlined style={{ fontSize: "20px" }} className="pr-5" />
           </div>
-        </div> */}
+        </div>
       </div>
       <div className="grid grid-cols-2 border-2 border-b-gray-300">
-        {/* <div className=" p-1 rounded-md" onClick={handleLike}>
+        <div className=" p-1 rounded-md" onClick={handleLike}>
           {likeStatus ? (
             <div className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md">
               <LikeOutlined style={{ fontSize: "24px", color: "blue" }} />
@@ -248,13 +237,15 @@ const PostItem = ({ post }) => {
           )}
         </div>
         <div
-          className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md"
+          className=" p-1 rounded-md"
           onClick={() => {
             setSidebarShowStatus(!sidebarShowStatus);
           }}
         >
-          <CommentOutlined style={{ fontSize: "24px" }} />
-          <p className="font-semibold ml-1">Bình luận</p>
+          <div className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md">
+            <CommentOutlined style={{ fontSize: "24px" }} />
+            <p className="font-semibold ml-1">Bình luận</p>
+          </div>
         </div>
         <div className="CommentFieldEmp">
           <CommentSidebar
@@ -264,8 +255,9 @@ const PostItem = ({ post }) => {
             activeUser={activeUser}
             setCommentCount={setCommentCount}
             isPost={true}
+            isUserPost={true}
           />
-        </div> */}
+        </div>
       </div>
     </div>
   );

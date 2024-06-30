@@ -68,7 +68,6 @@ const MyLocation = () => {
       const response = await getGeocodingByInput({ input: e.target.value });
       if (response.status === "OK") {
         setPredictions(response.predictions);
-        console.log(response);
       }
       // console.log(response);
     } catch (error) {}
@@ -187,15 +186,15 @@ const MyLocation = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-[513px]">
       <div className="flex pl-6 pt-2">
         <p
           className="text-sm text-gray-400 cursor-pointer"
           onClick={() => navigate("/")}
         >
-          Trang chu {">"}{" "}
+          Trang chủ {">"}{" "}
         </p>
-        <p className="text-sm text-gray-800 ml-1 cursor-pointer">San cua toi</p>
+        <p className="text-sm text-gray-800 ml-1 cursor-pointer">Sân của tôi</p>
       </div>
       <div className="p-4 pl-6">
         <Button
@@ -209,7 +208,7 @@ const MyLocation = () => {
         </Button>
       </div>
       <div className="grid grid-cols-4 gap-4 pt-2 pb-4">
-        {listLocation.map((item, index) => {
+        {listLocation?.map((item, index) => {
           return (
             <div
               key={index}
@@ -258,7 +257,7 @@ const MyLocation = () => {
           <Form.Item label="Name">
             <Input onChange={(e) => setName(e.target.value)} value={name} />
           </Form.Item>
-          {/* <Form.Item label="Thời gian mở cửa">
+          <Form.Item label="Thời gian mở cửa">
             <div className="">
               <TimePicker.RangePicker
                 format={formats}
@@ -270,7 +269,7 @@ const MyLocation = () => {
                 }}
               />
             </div>
-          </Form.Item> */}
+          </Form.Item>
           <Form.Item label="Sale">
             <InputNumber onChange={(value) => setSale(value)} value={sale} />
           </Form.Item>

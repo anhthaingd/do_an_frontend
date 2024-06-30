@@ -38,7 +38,6 @@ const Group = () => {
       const isJoined = isJoinedArray.some((joined) => joined);
       setJoinStatus(isJoined);
       setTotalMember(response.data.length);
-      console.log("a", isJoined);
     } catch (error) {
       console.log(error);
     }
@@ -84,7 +83,7 @@ const Group = () => {
     {
       key: "2",
       label: "Thành viên",
-      children: <ListMember listMember={listMember} group={group}/>,
+      children: <ListMember listMember={listMember} group={group} />,
     },
   ];
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
@@ -180,15 +179,15 @@ const Group = () => {
                           </button>
 
                           {isOpen && (
-                            <div className="origin-top-right absolute mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div className="origin-top-right absolute mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-30">
                               <div
-                                className="py-1"
+                                className="py-1 hover:bg-gray-300 "
                                 role="menu"
                                 aria-orientation="vertical"
                                 aria-labelledby="options-menu"
                               >
                                 <button
-                                  className="flex items-center px-4 py-2 text-sm hover:bg-gray-300 w-full"
+                                  className="flex items-center px-4 py-2 text-sm w-full"
                                   onClick={handleJoin}
                                 >
                                   <span className="mr-3">🚪</span>

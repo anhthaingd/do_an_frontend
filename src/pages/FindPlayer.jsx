@@ -12,7 +12,9 @@ import avatar from "../images/avatar.jpg";
 import ChipInput from "material-ui-chip-input";
 import { searchAchievement } from "../apis/achievementApi";
 import { ReloadOutlined } from "@ant-design/icons";
+import { searchHobby } from "../apis/hobbyApi";
 const FindPlayer = () => {
+  const loginUserID = localStorage.getItem("userId");
   const [params] = useSearchParams();
   const { queryParams, navigate } = useQueryParams();
   const page = params.get("page");
@@ -34,7 +36,7 @@ const FindPlayer = () => {
   const [university, setUniversity] = useState("");
   const [highSchool, setHighSchool] = useState("");
   const [achievement, setAchievement] = useState("");
-  const [hobby, setHobby] = useState([]);
+  const [hobby, setHobby] = useState("");
   const [userAchievement, setUserAchievement] = useState([]);
   const [matchingUsers, setMatchingUsers] = useState([]);
   const fetchInformation = async () => {
@@ -52,16 +54,37 @@ const FindPlayer = () => {
   const fetchUserByAchievement = async () => {
     try {
       const response = await searchAchievement({ ...queryParams });
+      const response2 = await searchHobby({ ...queryParams });
       setUserAchievement(response.data);
       const temp = listUser.filter((userItem) =>
         response.data.some(
           (achievementItem) => userItem.userID === achievementItem.userID
         )
       );
-      setMatchingUsers(temp);
+      const temp2 = listUser.filter((userItem) =>
+        response2.data.some(
+          (achievementItem) => userItem.userID === achievementItem.userID
+        )
+      );
+      let commonElements = [];
+      if (achievement && hobby) {
+        commonElements = temp.filter((tempItem) =>
+          temp2.some((temp2Item) => tempItem.userID === temp2Item.userID)
+        );
+      } else if (!achievement && hobby) {
+        commonElements = temp2;
+      } else if (achievement && !hobby) {
+        commonElements = temp;
+      }
+
+      setMatchingUsers(commonElements);
     } catch (error) {
       console.log(error);
     }
+  };
+  const fetchUserByHobby = async () => {
+    const res = await searchHobby({ ...queryParams });
+    console.log(res);
   };
   const findMatchingUsers = () => {
     return listUser.filter((userItem) =>
@@ -77,8 +100,8 @@ const FindPlayer = () => {
       ...queryParams,
       achievement: e.target.value,
     };
-    const temp = findMatchingUsers();
-    setMatchingUsers(temp);
+    // const temp = findMatchingUsers();
+    // setMatchingUsers(temp);
     if (e.target.value === "") {
       setMatchingUsers([]);
       setAchievement("");
@@ -89,7 +112,21 @@ const FindPlayer = () => {
       search: createSearchParams(newSearchParams).toString(),
     });
   };
-  console.log(matchingUsers);
+  const handleInputHobby = (e) => {
+    setHobby(e.target.value);
+    let newSearchParams = {
+      ...queryParams,
+      hobby: e.target.value,
+    };
+    if (e.target.value === "") {
+      setHobby("");
+      delete newSearchParams.hobby;
+    }
+    navigate({
+      pathname: `/search`,
+      search: createSearchParams(newSearchParams).toString(),
+    });
+  };
   const handleOnClickProvince = (e) => {
     const selectedProvince = e.target.value;
     setProvince(selectedProvince);
@@ -253,8 +290,8 @@ const FindPlayer = () => {
     fetchInformation();
     fetchUserByAchievement();
     fetchAddressData();
+    fetchUserByHobby();
   }, [params]);
-  console.log(achievement);
   return (
     <div className=" min-h-[513px] flex">
       <div className="w-3/4 bg-gray-100 p-5">
@@ -395,8 +432,8 @@ const FindPlayer = () => {
                 <div className="flex items-center ">
                   <input
                     type="text"
-                    // value={searchTerm}
-                    onChange={handleInputHighSchool}
+                    value={hobby}
+                    onChange={handleInputHobby}
                     placeholder="Nhập sở thích..."
                     style={{ outline: "none" }}
                     className="w-full"
@@ -423,50 +460,57 @@ const FindPlayer = () => {
         </div>
       </div>
       <div className="w-1/4 bg-green-200">
-        {Object.keys(queryParams).length === 1 &&
-          (achievement !== ""
-            ? matchingUsers.map((user) => (
-                <div
-                  key={user.id}
-                  className="bg-white p-2 m-2 rounded-md hover:bg-blue-300 cursor-pointer"
-                  onClick={() => {
-                    navigate(`/profile/${user.user.id}`);
-                  }}
-                >
-                  <div className="flex items-center">
-                    <img
-                      src={avatar}
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div className="ml-3">
-                      <p className="font-bold">{user.user.username}</p>
-                      <p>{user.user.phone}</p>
+        {Object.keys(queryParams).length === 0
+          ? ""
+          : hobby !== "" || achievement !== ""
+          ? matchingUsers.map(
+              (user) =>
+                user.user.id != loginUserID && (
+                  <div
+                    key={user.id}
+                    className="bg-white p-2 m-2 rounded-md hover:bg-blue-300 cursor-pointer"
+                    onClick={() => {
+                      navigate(`/profile/${user.user.id}`);
+                    }}
+                  >
+                    <div className="flex items-center">
+                      <img
+                        src={avatar}
+                        alt="avatar"
+                        className="w-10 h-10 rounded-full"
+                      />
+                      <div className="ml-3">
+                        <p className="font-bold">{user.user.username}</p>
+                        <p>{user.user.phone}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
-            : listUser.map((user) => (
-                <div
-                  key={user.id}
-                  className="bg-white p-2 m-2 rounded-md hover:bg-blue-300 cursor-pointer"
-                  onClick={() => {
-                    navigate(`/profile/${user.user.id}`);
-                  }}
-                >
-                  <div className="flex items-center">
-                    <img
-                      src={avatar}
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div className="ml-3">
-                      <p className="font-bold">{user.user.username}</p>
-                      <p>{user.user.phone}</p>
+                )
+            )
+          : listUser.map(
+              (user) =>
+                user.user.id != loginUserID && (
+                  <div
+                    key={user.id}
+                    className="bg-white p-2 m-2 rounded-md hover:bg-blue-300 cursor-pointer"
+                    onClick={() => {
+                      navigate(`/profile/${user.user.id}`);
+                    }}
+                  >
+                    <div className="flex items-center">
+                      <img
+                        src={avatar}
+                        alt="avatar"
+                        className="w-10 h-10 rounded-full"
+                      />
+                      <div className="ml-3">
+                        <p className="font-bold">{user.user.username}</p>
+                        <p>{user.user.phone}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )))}
+                )
+            )}
       </div>
     </div>
   );

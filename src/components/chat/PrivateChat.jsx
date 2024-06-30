@@ -68,7 +68,6 @@ const PrivateChat = () => {
           receiverID: currentChat?.room?.receiverID,
           message: inputValue,
         });
-        console.log(response.data);
         setNewMessage(response.data);
         // setMessages((prev) => [...prev, response.data]);
       } catch (error) {}

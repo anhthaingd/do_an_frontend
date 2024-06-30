@@ -8,6 +8,7 @@ import "../../Css/AddComment.css";
 import StarRating from "./StarRating";
 import { createComment } from "../../apis/commentLocationApi";
 import { createCommentPost } from "../../apis/commentPostApi";
+import { createCommentUserPost } from "../../apis/commentUserPostApi";
 const AddComment = ({
   setSidebarShowStatus,
   slug,
@@ -17,6 +18,8 @@ const AddComment = ({
   numberRate,
   setCommentCount,
   isPost,
+  aveStar,
+  isUserPost,
 }) => {
   const navigate = useNavigate();
   const textareaRef = useRef(null);
@@ -65,7 +68,7 @@ const AddComment = ({
           setError("");
         }, 4500);
       }
-    } else {
+    } else if (isPost === true && isUserPost === false) {
       e.preventDefault();
       try {
         const comment = {
@@ -74,6 +77,42 @@ const AddComment = ({
           postID: slug,
         };
         await createCommentPost(comment);
+
+        setSuccess("Add Comment successfully ");
+        setTimeout(() => {
+          setSuccess("");
+        }, 2700);
+
+        setTimeout(() => {
+          // if (star !== 0) {
+          //   document.querySelector(".rateCount").textContent = numberRate + 1;
+          // }
+          // document.querySelector(".commentCount").textContent = count + 1;
+          setCommentCount(count + 1);
+        }, 650);
+
+        clearInputs();
+
+        getLocationComments();
+      } catch (error) {
+        if (error.response.data.error === "Jwt expired") {
+          console.log("token expired ...");
+          navigate("/");
+        }
+        setError(error.response.data.error);
+        setTimeout(() => {
+          setError("");
+        }, 4500);
+      }
+    } else if (isPost === true && isUserPost === true) {
+      e.preventDefault();
+      try {
+        const comment = {
+          content,
+          userID: activeUser.id,
+          userPostID: slug,
+        };
+        await createCommentUserPost(comment);
 
         setSuccess("Add Comment successfully ");
         setTimeout(() => {

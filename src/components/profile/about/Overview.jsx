@@ -164,7 +164,6 @@ const Overview = () => {
     setAddress(place.description);
     const response = await getGeocodingByPlaceId({ placeId: place.place_id });
     if (response.status === "OK") {
-      console.log("a", response.result);
       setProvince(response.result.compound.province);
       setDistrict(response.result.compound.district);
       setWard(response.result.compound.commune);

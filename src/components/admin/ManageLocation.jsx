@@ -240,7 +240,6 @@ const ManageLocation = () => {
   };
   const deleteU = async (user) => {
     try {
-      console.log(user);
       const response = await deleteUser(user.key);
       fetchLocation();
     } catch (error) {

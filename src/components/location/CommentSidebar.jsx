@@ -6,6 +6,7 @@ import AddComment from "./AddComment";
 import { getCommentsByLocationID } from "../../apis/commentLocationApi";
 import StoryComments from "./StoryComment";
 import { getCommentsByPostID } from "../../apis/commentPostApi";
+import { getCommentsByUserPostID } from "../../apis/commentUserPostApi";
 const CommentSidebar = ({
   locationID,
   sidebarShowStatus,
@@ -13,11 +14,13 @@ const CommentSidebar = ({
   activeUser,
   numberRate,
   setCommentCount,
-  isPost
+  isPost,
+  isUserPost,
+  aveStar,
 }) => {
   const [count, setCount] = useState(0);
   const [commentList, setCommentList] = useState([]);
-  
+
   const sidebarRef = useRef(null);
 
   const getLocationComments = async () => {
@@ -31,9 +34,20 @@ const CommentSidebar = ({
       } catch (error) {
         console.log(error.response.data.error);
       }
-    } else {
+    } else if (isPost === true && isUserPost === false) {
       try {
         const response = await getCommentsByPostID(locationID);
+        if (response?.data) {
+          setCommentList(response.data);
+          setCount(response.data.length);
+        }
+      } catch (error) {
+        console.log(error.response.data.error);
+      }
+    } else if (isPost === true && isUserPost === true) {
+      try {
+        const response = await getCommentsByUserPostID(locationID);
+        console.log(response);
         if (response?.data) {
           setCommentList(response.data);
           setCount(response.data.length);
@@ -79,6 +93,8 @@ const CommentSidebar = ({
           numberRate={numberRate}
           setCommentCount={setCommentCount}
           isPost={isPost}
+          aveStar={aveStar}
+          isUserPost={isUserPost}
         />
         <StoryComments
           commentList={commentList}
@@ -88,6 +104,7 @@ const CommentSidebar = ({
           numberRate={numberRate}
           setCommentCount={setCommentCount}
           isPost={isPost}
+          isUserPost={isUserPost}
         />
       </div>
     </div>

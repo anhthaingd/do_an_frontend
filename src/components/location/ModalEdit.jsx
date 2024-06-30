@@ -89,7 +89,6 @@ const ModalEdit = ({
     }
   };
   const saveLocation = async (e) => {
-    console.log("zo");
     const data = new FormData();
     data.append("file", image);
     data.append("upload_preset", "jay3krzh");
@@ -117,7 +116,7 @@ const ModalEdit = ({
       close_time: closeTime,
     };
     try {
-      await updateLocation(location.id, locationData);
+      const res = await updateLocation(location.id, locationData);
       fetchLocation();
     } catch (error) {
       console.log(error);
@@ -142,7 +141,7 @@ const ModalEdit = ({
             style={{ backgroundColor: "#1677ff" }}
             // loading={loading}
           >
-            Tạo
+            Cập nhật
           </Button>,
           <Button key="back" onClick={handleCancel}>
             Hủy
@@ -168,6 +167,10 @@ const ModalEdit = ({
             <div className="">
               <TimePicker.RangePicker
                 format={formats}
+                defaultValue={[
+                  dayjs(location.open_time, "HH:mm"),
+                  dayjs(location.close_time, "HH:mm"),
+                ]}
                 onChange={(value) => {
                   if (value) {
                     setOpenTime(dayjs(value[0]).format("HH:mm"));
@@ -205,61 +208,7 @@ const ModalEdit = ({
               </Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item label="Vị trí">
-            <div>
-              <select
-                defaultValue={province}
-                value={province}
-                onChange={(e) => {
-                  const selectedProvince = e.target.value;
-                  setProvince(selectedProvince);
 
-                  const provinceData = addressData.find(
-                    (item) => item.Name === selectedProvince
-                  );
-                  if (provinceData && provinceData.Districts) {
-                    setDistrictArr(provinceData.Districts);
-                  }
-                }}
-              >
-                {addressData.map((item, index) => (
-                  <option key={index} value={item.Name}>
-                    {item.Name}
-                  </option>
-                ))}
-              </select>
-
-              <select
-                defaultValue={location.district}
-                value={district}
-                onChange={(e) => {
-                  const selectedDistrict = e.target.value;
-                  setDistrict(selectedDistrict);
-
-                  const districtData = districtArr.find(
-                    (item) => item.Name === selectedDistrict
-                  );
-                  if (districtData && districtData.Wards) {
-                    setWardArr(districtData.Wards);
-                  }
-                }}
-              >
-                {districtArr.map((item, index) => (
-                  <option key={index} value={item.Name}>
-                    {item.Name}
-                  </option>
-                ))}
-              </select>
-
-              <select value={ward} onChange={(e) => setWard(e.target.value)}>
-                {/* {wardArrOption.map((item, index) => (
-                  <option key={index} value={item.Name}>
-                    {item.Name}
-                  </option>
-                ))} */}
-              </select>
-            </div>
-          </Form.Item>
           <Form.Item label="Nhập vị trí">
             <Input
               onChange={(e) => setLocationDetail(e.target.value)}

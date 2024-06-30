@@ -110,7 +110,6 @@ const MapCantClick = ({ viewport, setViewport }) => {
 
   const handleClick = (event) => {
     const { lngLat } = event;
-    console.log(lngLat);
   };
 
   const getCursor = ({ isHovering, isDragging }) => {

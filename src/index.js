@@ -15,6 +15,7 @@ root.render(
     <PersistGate loading={null} persistor={persistor}>
       <AuthContextProvider>
         <App />
+        
       </AuthContextProvider>
     </PersistGate>
   </Provider>

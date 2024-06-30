@@ -21,7 +21,6 @@ const Contact = () => {
       console.error("Fetch group error: ", error);
     }
   };
-  console.log(myGroup);
   useEffect(() => {
     fetchUser();
     fetchMyGroup();

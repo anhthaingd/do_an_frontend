@@ -34,7 +34,6 @@ const Register = () => {
       const response = await createInformation({
         userID: loginUserIDRd,
       });
-      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -52,7 +51,7 @@ const Register = () => {
       setTimeout(() => {
         setError("");
       }, 8000);
-      return setError("Passwords do not match");
+      return setError("Mật khẩu không trùng khớp.");
     }
     dispatch(
       actions.register({
@@ -96,9 +95,9 @@ const Register = () => {
     // }
   };
   return (
-    <div className="">
+    <div className="h-screen">
       <Header />
-      <div className="Inclusive-register-page">
+      <div className="Inclusive-register-page min-h-[513px]">
         <div className="register-big-wrapper">
           <div className="register-banner-section ">
             <img src="register.png" alt="banner" />
@@ -202,17 +201,7 @@ const Register = () => {
                 />
                 <label htmlFor="confirmpassword">Confirm Password</label>
               </div>
-              <div className="input-wrapper">
-                <input
-                  type="text"
-                  required
-                  id="name"
-                  placeholder="Enter address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-                <label htmlFor="name">Address</label>
-              </div>
+
               <div>
                 <div className="ml-4">
                   <p style={{ color: "#646464" }} className="text-sm ">
@@ -253,7 +242,7 @@ const Register = () => {
         </div>
       </div>
 
-      <div className="pt-60">
+      <div className="">
         <Footer />
       </div>
     </div>

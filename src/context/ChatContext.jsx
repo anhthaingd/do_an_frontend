@@ -106,6 +106,7 @@ const ChatProvider = ({ children }) => {
 
     socket.on("sendPrivateChat", async (res) => {
       setCurrentChat(res);
+
       const { room, messages } = res;
       setRooms((prev) => {
         const newRooms = [...prev];
@@ -141,6 +142,7 @@ const ChatProvider = ({ children }) => {
         currentChat,
         setCurrentChat,
         setRooms,
+        socket,
       }}
     >
       {children}

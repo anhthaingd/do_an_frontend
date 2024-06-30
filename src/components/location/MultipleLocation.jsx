@@ -39,7 +39,7 @@ const MultipleLocation = (props) => {
     nextArrow: <SampleNextArrow />,
   };
   const renderSystem = (listLocation) => {
-    return listLocation.map((item, index) => {
+    return listLocation?.map((item, index) => {
       return (
         <div
           key={index}

@@ -1,12 +1,24 @@
 // src/components/ProfileHeader.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import avatar from "../../images/avatar.jpg";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getUserById } from "../../apis/userApi";
+import ChatModal from "../../components/modal/ChatModal";
+import { io } from "socket.io-client";
 const ProfileHeader = () => {
   const userID = useParams().id;
   const loginUserID = localStorage.getItem("userId");
   const [user, setUser] = useState({});
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [sentMessages, setSentMessages] = useState([]);
+
+  const buttonRef = useRef(null);
+  const handleSend = (message) => {
+    setSentMessages([...sentMessages, message]);
+    setModalOpen(false);
+  };
+
+  const navigate = useNavigate();
   const fetchUser = async () => {
     try {
       const response = await getUserById(userID);
@@ -28,17 +40,40 @@ const ProfileHeader = () => {
             <h1 className="text-2xl text-black">{user?.username}</h1>
           </div>
         </div>
-        <button className=" text-white rounded flex gap-2">
-          {loginUserID == userID ? (
-            ""
-          ) : (
-            <p className="bg-blue-500 p-2 rounded text-white"> Nhắn tin</p>
-          )}
-          <p className="bg-gray-300 p-2 rounded text-black">
-            {" "}
-            Chỉnh sửa trang cá nhân
-          </p>
-        </button>
+        <div>
+          <button className=" text-white rounded flex gap-2">
+            {loginUserID == userID ? (
+              ""
+            ) : (
+              <div>
+                <p
+                  ref={buttonRef}
+                  className="bg-blue-500 p-2 rounded text-white cursor-pointer"
+                  onClick={() => setModalOpen(true)}
+                >
+                  Nhắn tin
+                </p>
+                <ChatModal
+                  isOpen={isModalOpen}
+                  onClose={() => setModalOpen(false)}
+                  onSend={handleSend}
+                  buttonRef={buttonRef}
+                />
+              </div>
+            )}
+            {loginUserID == userID ? (
+              <p
+                className="bg-gray-300 p-2 rounded text-black"
+                onClick={() => navigate(`/profile/${userID}/about/overview`)}
+              >
+                {" "}
+                Chỉnh sửa trang cá nhân
+              </p>
+            ) : (
+              ""
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

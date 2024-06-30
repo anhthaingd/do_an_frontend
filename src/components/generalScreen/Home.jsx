@@ -29,7 +29,7 @@ const Home = () => {
     fetchLocation();
   }, []);
   const saleLocation = listLocation
-    .filter((location) => location.sale !== null && location.sale > 0)
+    ?.filter((location) => location.sale !== null && location.sale > 0)
     .sort((a, b) => b.sale - a.sale) // Sắp xếp giảm dần theo thuộc tính sale
     .slice(0, 8);
   return (

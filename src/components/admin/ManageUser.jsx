@@ -90,7 +90,6 @@ const ManageUser = ({ type }) => {
     }));
   const deleteU = async (user) => {
     try {
-      console.log(user);
       const response = await deleteUser(user.key);
       fetchUser();
     } catch (error) {
