@@ -22,7 +22,7 @@ export const getAllUser = () => {
       // Xử lý lỗi ở đây
       throw error;
     });
-}
+};
 export const deleteUser = (userId) => {
   return Api.delete(`/user/${userId}`)
     .then((response) => {
@@ -33,4 +33,16 @@ export const deleteUser = (userId) => {
       // Xử lý lỗi ở đây
       throw error;
     });
-}
+};
+
+export const findUser = (search) => {
+  return Api.get(`/user/search`, { params: search })
+    .then((response) => {
+      // Xử lý dữ liệu trả về từ response ở đây
+      return response.data;
+    })
+    .catch((error) => {
+      // Xử lý lỗi ở đây
+      throw error;
+    });
+};

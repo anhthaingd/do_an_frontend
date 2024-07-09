@@ -12,6 +12,7 @@ import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import axios from "axios";
 import { updateLocation } from "../../apis/locationApi";
+import { toast } from "react-toastify";
 const ModalEdit = ({
   openEditModal,
   setOpenEditModal,
@@ -117,6 +118,9 @@ const ModalEdit = ({
     };
     try {
       const res = await updateLocation(location.id, locationData);
+      if (res.success) {
+        toast.success("Cập nhật thành công");
+      }
       fetchLocation();
     } catch (error) {
       console.log(error);

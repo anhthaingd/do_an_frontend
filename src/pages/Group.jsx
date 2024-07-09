@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getGroupById } from "../apis/groupApi";
-import { Button, Tabs } from "antd";
+import { useNavigate, useParams } from "react-router-dom";
+import { deleteGroup, getGroupById } from "../apis/groupApi";
+import { Button, Modal, Tabs } from "antd";
 import ListPost from "../components/group/ListPost";
 import ListMember from "../components/group/ListMember";
 import ownerPNG from "../images/owner.png";
@@ -13,6 +13,7 @@ import {
 } from "../apis/memberApi";
 import "../Css/Group.css";
 import { list } from "postcss";
+import { toast } from "react-toastify";
 const Group = () => {
   const groupID = useParams().id;
   const [group, setGroup] = useState({});
@@ -20,6 +21,24 @@ const Group = () => {
   const [joinStatus, setJoinStatus] = useState(false);
   const [totalMember, setTotalMember] = useState(0);
   const [listMember, setListMember] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  console.log(isModalOpen);
+  const navigate = useNavigate();
+  const handleOk = async () => {
+    setIsModalOpen(false);
+    await deleteGroup(groupID);
+    toast.success("Xóa nhóm thành công");
+    // fetchMatch(date, locationID);
+    fetchGroup();
+    navigate("/");
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const handleClickDelete = () => () => {
+    setIsModalOpen(true);
+  };
   const fetchGroup = async () => {
     try {
       const response = await getGroupById(groupID);
@@ -158,7 +177,7 @@ const Group = () => {
                       type="primary"
                       danger
                       ghost
-                      // onClick={() => deleteU(user)}
+                      onClick={handleClickDelete()}
                     >
                       Xóa nhóm
                     </Button>
@@ -212,6 +231,14 @@ const Group = () => {
             </div>
             <Tabs defaultActiveKey="1" items={items} />
           </div>
+          <Modal
+            title="Bạn có chắc chắn muốn xóa nhóm này?"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            okText="Có"
+            cancelText="Không"
+          ></Modal>
         </div>
       </div>
     </div>

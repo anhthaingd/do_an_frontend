@@ -105,12 +105,12 @@ const Register = () => {
 
           <div className="section-wrapper">
             <div className="top-suggest_login">
-              <span> Have an account? </span>
-              <button onClick={() => navigate("/login")}>Sign In</button>
+              <span> Đã có tài khoản? </span>
+              <button onClick={() => navigate("/login")}>Đăng nhập</button>
             </div>
 
             <div className="top-register-explain">
-              <h2>Welcome to my website </h2>
+              <h2>Sporty Town Xin Chào </h2>
             </div>
 
             <form onSubmit={registerHandler}>
@@ -120,7 +120,7 @@ const Register = () => {
                   type="text"
                   required
                   id="name"
-                  placeholder="Enter username"
+                  placeholder="Nhập username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
@@ -132,22 +132,22 @@ const Register = () => {
                     type="text"
                     required
                     id="name"
-                    placeholder="Enter firstName"
+                    placeholder="Nhập tên"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                   />
-                  <label htmlFor="name">First Name</label>
+                  <label htmlFor="name">Tên</label>
                 </div>
                 <div className="input-wrapper">
                   <input
                     type="text"
                     required
                     id="name"
-                    placeholder="Enter lastName"
+                    placeholder="Nhập họ"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                   />
-                  <label htmlFor="name">Last Name</label>
+                  <label htmlFor="name">Họ</label>
                 </div>
               </div>
 
@@ -168,11 +168,11 @@ const Register = () => {
                   type="text"
                   required
                   id="name"
-                  placeholder="Enter phone number"
+                  placeholder="Nhập số điện thoại"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                 />
-                <label htmlFor="name">Phone Number</label>
+                <label htmlFor="name">Số điện thoại</label>
               </div>
 
               <div className="input-wrapper">
@@ -181,12 +181,12 @@ const Register = () => {
                   required
                   id="password"
                   autoComplete="true"
-                  placeholder="6+ strong character"
+                  placeholder="6+ ký tự"
                   onChange={(e) => setPassword(e.target.value)}
                   value={password}
                   tabIndex={2}
                 />
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">Mật khẩu</label>
               </div>
               <div></div>
               <div className="input-wrapper">
@@ -195,17 +195,17 @@ const Register = () => {
                   required
                   id="confirmpassword"
                   autoComplete="true"
-                  placeholder="Confirm password"
+                  placeholder="Nhập lại mật khẩu"
                   value={confirmpassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-                <label htmlFor="confirmpassword">Confirm Password</label>
+                <label htmlFor="confirmpassword">Nhập lại mật khẩu</label>
               </div>
 
               <div>
                 <div className="ml-4">
                   <p style={{ color: "#646464" }} className="text-sm ">
-                    Register as
+                    Đăng ký với tư cách
                   </p>
                   <div className="flex items-center space-x-4 mt-2">
                     <div className="flex justify-between items-center">
@@ -236,7 +236,7 @@ const Register = () => {
                 </div>
               </div>
 
-              <button type="submit">Register</button>
+              <button type="submit">Đăng ký</button>
             </form>
           </div>
         </div>

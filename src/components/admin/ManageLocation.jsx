@@ -1,13 +1,14 @@
-import { Button, Table } from "antd";
+import { Button, Modal, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { deleteUser, getAllUser } from "../../apis/userApi";
-import { getLocationByTypeLimit } from "../../apis/locationApi";
+import { deleteLocation, getLocationByTypeLimit } from "../../apis/locationApi";
 import { createSearchParams } from "react-router-dom";
 import useQueryParams from "../../hooks/useQueryParams";
 import axios from "axios";
 import { items } from "../../utils/sport";
 import { ReloadOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
 const ManageLocation = () => {
   const [params] = useSearchParams();
   const { queryParams, navigate } = useQueryParams();
@@ -23,15 +24,20 @@ const ManageLocation = () => {
   const districtArrOption = [{ Name: "Chọn huyện" }, ...districtArr];
   const wardArrOption = [{ Name: "Chọn xã" }, ...wardArr];
   const sports = [{ name: "Chọn môn thể thao" }, ...items];
-  const listSport = [
-    "Chọn môn thể thao",
-    "Bóng đá",
-    "Cầu lông",
-    "Tennis",
-    "Bóng bàn",
-    "Bóng chuyền",
-    "Bóng rổ",
-  ];
+  const [isModalOpen1, setIsModalOpen1] = useState(false);
+  const [locationID, setLocationID] = useState(null);
+  const handleOk1 = async () => {
+    setIsModalOpen1(false);
+    await deleteLocation(locationID);
+    toast.success("Xóa sân thành công");
+    // fetchMatch(date, locationID);
+    fetchLocation();
+    navigate("/admin");
+  };
+
+  const handleCancel1 = () => {
+    setIsModalOpen1(false);
+  };
   const fetchAddressData = async () => {
     const result = await axios.get(
       "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json"
@@ -47,6 +53,10 @@ const ManageLocation = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+  const handleClickDelete = (locationID) => () => {
+    setIsModalOpen1(true);
+    setLocationID(locationID);
   };
   const columns = [
     {
@@ -73,7 +83,7 @@ const ManageLocation = () => {
       },
     },
     {
-      title: "Image",
+      title: "Ảnh",
       dataIndex: "image",
       key: "image",
       render: (data) => {
@@ -91,6 +101,7 @@ const ManageLocation = () => {
       title: "Địa chỉ",
       dataIndex: "address",
       key: "address",
+      width: 500,
     },
     {
       title: "Thể loại",
@@ -98,20 +109,25 @@ const ManageLocation = () => {
       key: "type",
     },
     {
-      title: "Action",
+      title: "Thao tác",
       key: "action",
-      render: (user) => (
+      render: (location) => (
         <>
           <Button
             type="primary"
             ghost
             style={{ marginRight: "10px" }}
-            onClick={() => navigate(`/system/update/${user.key}`)}
+            onClick={() => navigate(`/location/${location.id}`)}
             className="mb-2"
           >
             Xem
           </Button>
-          <Button type="primary" danger ghost onClick={() => deleteU(user)}>
+          <Button
+            type="primary"
+            danger
+            ghost
+            onClick={handleClickDelete(location.id)}
+          >
             Xóa
           </Button>
         </>
@@ -249,7 +265,7 @@ const ManageLocation = () => {
   useEffect(() => {
     fetchLocation();
     fetchAddressData();
-  }, [params]);
+  }, [params, locationID]);
   return (
     <div className="mr-5">
       <div
@@ -334,6 +350,14 @@ const ManageLocation = () => {
           />
         </div>
       </div>
+      <Modal
+        title="Bạn có chắc chắn muốn xóa sân này?"
+        open={isModalOpen1}
+        onOk={handleOk1}
+        onCancel={handleCancel1}
+        okText="Có"
+        cancelText="Không"
+      ></Modal>
     </div>
   );
 };

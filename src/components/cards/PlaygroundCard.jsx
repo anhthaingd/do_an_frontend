@@ -349,7 +349,7 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
             return (
               <img
                 alt="example"
-                src="https://nhadepso.com/wp-content/uploads/2023/02/cap-nhat-50-hinh-nen-bong-da-dep-chat-luong-nhat-cho-may-tinh_1.jpg"
+                src="https://haycafe.vn/wp-content/uploads/2022/01/Hinh-anh-nen-bong-da-dep.jpg"
               />
             );
           } else if (playground.location.type === 1) {

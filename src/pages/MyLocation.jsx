@@ -12,6 +12,7 @@ import Modal from "antd/es/modal/Modal";
 import axios from "axios";
 import Map from "../components/map/Map";
 import { getGeocodingByInput, getGeocodingByPlaceId } from "../apis/mapApi";
+import { toast } from "react-toastify";
 const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
 const formats = "HH:mm";
 const MyLocation = () => {
@@ -28,7 +29,7 @@ const MyLocation = () => {
   const [file, setFile] = useState("");
   const [name, setName] = useState("");
   const [image, setImage] = useState("");
-  const [type, setType] = useState(0);
+  const [type, setType] = useState("");
   const [sale, setSale] = useState(0);
   const [openTime, setOpenTime] = useState();
   const [closeTime, setCloseTime] = useState();
@@ -43,6 +44,7 @@ const MyLocation = () => {
   const [predictions, setPredictions] = useState([]);
   const [lat, setLat] = useState(null);
   const [lng, setLng] = useState(null);
+  const [disableButton, setDisableButton] = useState(false);
   const [viewport, setViewport] = useState({
     latitude: 21.0065649,
     longitude: 105.8431364,
@@ -75,7 +77,8 @@ const MyLocation = () => {
   useEffect(() => {
     fetchLocation();
     fetchAddressData();
-  }, [listLocation]);
+    handleDisableButton();
+  }, [disableButton, locationDetail, type]);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -97,6 +100,14 @@ const MyLocation = () => {
   const districtArrOption = [{ Name: "Chọn huyện" }, ...districtArr];
   const wardArrOption = [{ Name: "Chọn xã" }, ...wardArr];
   const [loading, setLoading] = useState(false);
+  const handleDisableButton = () => {
+    if (locationDetail === "" || type === "") {
+      setDisableButton(true);
+    } else {
+      setDisableButton(false);
+    }
+  };
+
   const saveLocation = async (e) => {
     try {
       const data = new FormData();
@@ -112,7 +123,7 @@ const MyLocation = () => {
       );
       const imageData = await res.json();
       const img = !imageData.secure_url
-        ? "https://simerp.io/wp-content/uploads/2021/07/POS-quan-ly-hang-ton-kho.png"
+        ? "https://www.izone.edu.vn/wp-content/uploads/2021/12/p18lq7ediepl816p6s04171vo23.jpg"
         : imageData.secure_url;
       const location = {
         ownerID: userID,
@@ -136,6 +147,10 @@ const MyLocation = () => {
         //   "Successfully created a new attack",
         //   "success"
         // );
+        if (response.success) {
+          fetchLocation();
+          toast.success("Tạo sân thành công");
+        }
       } catch (error) {
         console.log(error);
       }
@@ -233,6 +248,7 @@ const MyLocation = () => {
             onClick={handleOk}
             style={{ backgroundColor: "#1677ff" }}
             loading={loading}
+            disabled={disableButton}
           >
             Tạo
           </Button>,

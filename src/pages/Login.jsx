@@ -61,14 +61,14 @@ const Login = () => {
         <div className="login-big-wrapper">
           <div className="section-wrapper">
             <div className="top-suggest_register">
-              <span>Don't have an account? </span>
-              <button onClick={() => navigate("/register")}>Sign Up</button>
+              <span>Bạn chưa có tài khoản? </span>
+              <button onClick={() => navigate("/register")}>Đăng ký</button>
             </div>
 
             <div className="top-login-explain">
-              <h2>Login to Your Account </h2>
+              <h2>Đăng nhập vào tài khoản </h2>
 
-              <p>Please Login Your Account, Thank You!</p>
+              <p>Hãy nhập thông tin, Cảm ơn!</p>
             </div>
 
             <form onSubmit={loginHandler}>
@@ -83,7 +83,7 @@ const Login = () => {
                   value={phone}
                   tabIndex={1}
                 />
-                <label htmlFor="email">Phone</label>
+                <label htmlFor="email">Số điện thoại</label>
               </div>
               <div className="input-wrapper">
                 <input
@@ -91,21 +91,21 @@ const Login = () => {
                   required
                   id="password"
                   autoComplete="true"
-                  placeholder="6+ strong character"
+                  placeholder="6+ ký tự"
                   onChange={(e) => setPassword(e.target.value)}
                   value={password}
                   tabIndex={2}
                 />
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">Mật khẩu</label>
               </div>
-              <Link
+              {/* <Link
                 to="/forgotpassword"
                 className="login-screen__forgotpassword"
               >
                 {" "}
                 Forgot Password ?
-              </Link>
-              <button type="submit">Login</button>
+              </Link> */}
+              <button type="submit">Đăng nhập</button>
             </form>
           </div>
 

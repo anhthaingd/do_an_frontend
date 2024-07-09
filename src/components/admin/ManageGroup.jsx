@@ -1,89 +1,96 @@
 import { Button, Modal, Table } from "antd";
 import React, { useEffect, useState } from "react";
+import { deleteGroup, getAllGroup } from "../../apis/groupApi";
 import { Link, useNavigate } from "react-router-dom";
-import { deleteUser, getAllUser } from "../../apis/userApi";
+import { getMemberByGroupID } from "../../apis/memberApi";
 import { toast } from "react-toastify";
 
-const ManageUser = ({ type }) => {
+const ManageGroup = () => {
+  const [groups, setGroups] = useState([]);
+  const [listMember, setListMember] = useState([]);
+  const [count, setCount] = useState(null);
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]); // [1
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [userID, setUserID] = useState(null);
+  const [groupID, setGroupID] = useState(null);
   const handleOk = async () => {
     setIsModalOpen(false);
-    await deleteUser(userID);
-    toast.success("Xóa người dùng thành công");
+    await deleteGroup(groupID);
+    toast.success("Xóa nhóm thành công");
     // fetchMatch(date, locationID);
-    fetchUser();
+    fetchGroup();
     navigate("/admin");
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  const handleClickDelete = (userID) => () => {
+  const handleClickDelete = (groupID) => () => {
     setIsModalOpen(true);
-    setUserID(userID);
+    setGroupID(groupID);
   };
-  const fetchUser = async () => {
+  const fetchGroup = async () => {
     try {
-      const response = await getAllUser();
-      setUsers(response.data);
+      const response = await getAllGroup();
+      setGroups(response.data);
     } catch (error) {
       console.log(error);
     }
   };
+  const fetchCountMember = async (groupID) => {
+    const response = await getMemberByGroupID(groupID);
+    return response.data.length;
+  };
   const columns = [
     {
-      title: "Username",
-      //   dataIndex: "name",
+      title: "Tên nhóm",
       key: "action",
       render: (data) => {
         return (
-          <Link to={`/profile/${data.key}`} target="_blank">
-            {data.username}
+          <Link to={`/group/${data.id}`} target="_blank">
+            {data.name}
           </Link>
         );
       },
     },
     {
-      title: "Họ và tên",
-      dataIndex: "fullName",
-      key: "fullName",
+      title: "Quản trị viên",
+      dataIndex: "ownerName",
+      key: "ownerName",
     },
+    // {
+    //   title: "Số lượng thành viên",
+    //   key: "action",
+    //   render: (data) => {
+    //     fetchCountMember(data.id)
+    //       .then((ketQua) => {
+    //         return ketQua;
+    //       })
+    //       .catch((error) => {
+    //         console.error("Lỗi khi lấy số lượng thành viên:", error);
+    //       });
+    //   },
+    // },
     {
-      title: "Ảnh đại diện",
+      title: "Ảnh",
       dataIndex: "image",
       key: "image",
-      render: (text) => (
+      render: (data) => (
         <img
-          src="https://tse4.mm.bing.net/th?id=OIP.NRrEYS-5-HeNRNH8qyscEwHaHw&pid=Api&P=0&h=180"
-          alt="Avatar"
+          src={data}
           style={{ width: "100px", height: "100px", borderRadius: "5px" }}
         />
       ),
     },
-
-    {
-      title: "Số điện thoại",
-      dataIndex: "phone",
-      key: "phone",
-    },
-    {
-      title: "Vai trò",
-      dataIndex: "role",
-      key: "role",
-    },
     {
       title: "Thao tác",
       key: "action",
-      render: (user) => (
+      render: (group) => (
         <>
           <Button
             type="primary"
             ghost
             style={{ marginRight: "10px" }}
-            onClick={() => navigate(`/profile/${user.key}`)}
+            onClick={() => navigate(`/group/${group.id}`)}
             className="mb-2"
           >
             Xem
@@ -92,7 +99,7 @@ const ManageUser = ({ type }) => {
             type="primary"
             danger
             ghost
-            onClick={handleClickDelete(user.key)}
+            onClick={handleClickDelete(group.id)}
           >
             Xóa
           </Button>
@@ -100,28 +107,14 @@ const ManageUser = ({ type }) => {
       ),
     },
   ];
-  const data = users
-    .filter((item) => item.role === type)
-    .map((item) => ({
-      key: item.id,
-      username: item.username,
-      fullName: item.firstName
-        ? item.firstName + " " + item.lastName
-        : "Chưa nhập tên",
-      phone: item.phone,
-      image: item.image,
-      role: item.role === 0 ? "User" : "Manager",
-    }));
-  const deleteU = async (user) => {
-    try {
-      const response = await deleteUser(user.key);
-      fetchUser();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const data = groups.map((item) => ({
+    id: item.id,
+    name: item.name,
+    ownerName: item.owner.username,
+    image: item.image,
+  }));
   useEffect(() => {
-    fetchUser();
+    fetchGroup();
   }, []);
   return (
     <div className="mr-5">
@@ -150,7 +143,7 @@ const ManageUser = ({ type }) => {
         </div>
       </div>
       <Modal
-        title="Bạn có chắc chắn muốn xóa người dùng này?"
+        title="Bạn có chắc chắn muốn xóa nhóm này?"
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -161,4 +154,4 @@ const ManageUser = ({ type }) => {
   );
 };
 
-export default ManageUser;
+export default ManageGroup;

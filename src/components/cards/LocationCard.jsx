@@ -56,7 +56,7 @@ const LocationCard = (props) => {
             </div>
             <p className="text-sm"></p>
             <div className="mt-3 flex items-center">
-              <span className=" font-semibold">Khu vuc:</span>
+              <span className=" font-semibold">Khu vực:</span>
               <span className="ml-1">
                 {cleanedLocation.district} - {cleanedLocation.province}
               </span>
@@ -75,7 +75,7 @@ const LocationCard = (props) => {
               className="text-white w-full hover:font-semibold  hover:bg-blue-600 bg-blue-500 p-2 rounded-md text-center"
               onClick={() => navigate(`/location/${location.id}`)}
             >
-              Xem chi tiet
+              Xem chi tiết
             </button>
           </div>
         </div>

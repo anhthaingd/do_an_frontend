@@ -110,7 +110,7 @@ const ChatProvider = ({ children }) => {
       const { room, messages } = res;
       setRooms((prev) => {
         const newRooms = [...prev];
-        const index = newRooms.findIndex((item) => item.id === room.id);
+        const index = newRooms.findIndex((item) => item?.id === room?.id);
         if (index !== -1) {
           newRooms[index] = room;
         } else {

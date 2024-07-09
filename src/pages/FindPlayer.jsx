@@ -13,6 +13,7 @@ import ChipInput from "material-ui-chip-input";
 import { searchAchievement } from "../apis/achievementApi";
 import { ReloadOutlined } from "@ant-design/icons";
 import { searchHobby } from "../apis/hobbyApi";
+import { findUser } from "../apis/userApi";
 const FindPlayer = () => {
   const loginUserID = localStorage.getItem("userId");
   const [params] = useSearchParams();
@@ -39,42 +40,63 @@ const FindPlayer = () => {
   const [hobby, setHobby] = useState("");
   const [userAchievement, setUserAchievement] = useState([]);
   const [matchingUsers, setMatchingUsers] = useState([]);
+  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const fetchInformation = async () => {
     try {
-      const response = await searchInformation({
+      const res = await searchInformation({
         max: 12,
         ...queryParams,
       });
-      setCount(response?.data?.count);
-      setListUser(response.data.rows);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const fetchUserByAchievement = async () => {
-    try {
+      setCount(res?.data?.count);
+      setListUser(res.data.rows);
       const response = await searchAchievement({ ...queryParams });
       const response2 = await searchHobby({ ...queryParams });
+      const response3 = await findUser({ ...queryParams });
       setUserAchievement(response.data);
-      const temp = listUser.filter((userItem) =>
+      const hasInfo = phone || email || username;
+      const temp = res.data.rows.filter((userItem) =>
         response.data.some(
           (achievementItem) => userItem.userID === achievementItem.userID
         )
       );
-      const temp2 = listUser.filter((userItem) =>
+      const temp2 = res.data.rows.filter((userItem) =>
         response2.data.some(
           (achievementItem) => userItem.userID === achievementItem.userID
         )
       );
+      const temp3 = res.data.rows.filter((userItem) =>
+        response3.data.some((user) => userItem.userID === user.id)
+      );
+      console.log("temp3", temp3);
       let commonElements = [];
-      if (achievement && hobby) {
+      if (achievement && hobby && hasInfo) {
+        commonElements = temp
+          .filter((tempItem) =>
+            temp2.some((temp2Item) => tempItem.userID === temp2Item.userID)
+          )
+          .filter((commonItem) =>
+            temp3.some((temp3Item) => commonItem.userID === temp3Item.userID)
+          );
+      } else if (achievement && hobby) {
         commonElements = temp.filter((tempItem) =>
           temp2.some((temp2Item) => tempItem.userID === temp2Item.userID)
         );
-      } else if (!achievement && hobby) {
-        commonElements = temp2;
-      } else if (achievement && !hobby) {
+      } else if (achievement && hasInfo) {
+        commonElements = temp.filter((tempItem) =>
+          temp3.some((temp3Item) => tempItem.userID === temp3Item.userID)
+        );
+      } else if (hobby && hasInfo) {
+        commonElements = temp2.filter((temp2Item) =>
+          temp3.some((temp3Item) => temp2Item.userID === temp3Item.userID)
+        );
+      } else if (achievement) {
         commonElements = temp;
+      } else if (hobby) {
+        commonElements = temp2;
+      } else if (hasInfo) {
+        commonElements = temp3;
       }
 
       setMatchingUsers(commonElements);
@@ -82,9 +104,64 @@ const FindPlayer = () => {
       console.log(error);
     }
   };
+  console.log("listUser", listUser);
+  const fetchUserByAchievement = async () => {
+    try {
+      // const response = await searchAchievement({ ...queryParams });
+      // const response2 = await searchHobby({ ...queryParams });
+      // const response3 = await findUser({ ...queryParams });
+      // setUserAchievement(response.data);
+      // const hasInfo = phone || email || username;
+      // const temp = listUser.filter((userItem) =>
+      //   response.data.some(
+      //     (achievementItem) => userItem.userID === achievementItem.userID
+      //   )
+      // );
+      // const temp2 = listUser.filter((userItem) =>
+      //   response2.data.some(
+      //     (achievementItem) => userItem.userID === achievementItem.userID
+      //   )
+      // );
+      // const temp3 = listUser.filter((userItem) =>
+      //   response3.data.some((user) => userItem.userID === user.id)
+      // );
+      // console.log("temp3", temp3);
+      // let commonElements = [];
+      // if (achievement && hobby && hasInfo) {
+      //   commonElements = temp
+      //     .filter((tempItem) =>
+      //       temp2.some((temp2Item) => tempItem.userID === temp2Item.userID)
+      //     )
+      //     .filter((commonItem) =>
+      //       temp3.some((temp3Item) => commonItem.userID === temp3Item.userID)
+      //     );
+      // } else if (achievement && hobby) {
+      //   commonElements = temp.filter((tempItem) =>
+      //     temp2.some((temp2Item) => tempItem.userID === temp2Item.userID)
+      //   );
+      // } else if (achievement && hasInfo) {
+      //   commonElements = temp.filter((tempItem) =>
+      //     temp3.some((temp3Item) => tempItem.userID === temp3Item.userID)
+      //   );
+      // } else if (hobby && hasInfo) {
+      //   commonElements = temp2.filter((temp2Item) =>
+      //     temp3.some((temp3Item) => temp2Item.userID === temp3Item.userID)
+      //   );
+      // } else if (achievement) {
+      //   commonElements = temp;
+      // } else if (hobby) {
+      //   commonElements = temp2;
+      // } else if (hasInfo) {
+      //   commonElements = temp3;
+      // }
+
+      // setMatchingUsers(commonElements);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const fetchUserByHobby = async () => {
     const res = await searchHobby({ ...queryParams });
-    console.log(res);
   };
   const findMatchingUsers = () => {
     return listUser.filter((userItem) =>
@@ -106,6 +183,51 @@ const FindPlayer = () => {
       setMatchingUsers([]);
       setAchievement("");
       delete newSearchParams.achievement;
+    }
+    navigate({
+      pathname: `/search`,
+      search: createSearchParams(newSearchParams).toString(),
+    });
+  };
+  const handleInputUsername = (e) => {
+    setUsername(e.target.value);
+
+    let newSearchParams = {
+      ...queryParams,
+      username: e.target.value,
+    };
+    if (e.target.value === "") {
+      delete newSearchParams.username;
+    }
+    navigate({
+      pathname: `/search`,
+      search: createSearchParams(newSearchParams).toString(),
+    });
+  };
+  const handleInputPhone = (e) => {
+    setPhone(e.target.value);
+
+    let newSearchParams = {
+      ...queryParams,
+      phone: e.target.value,
+    };
+    if (e.target.value === "") {
+      delete newSearchParams.phone;
+    }
+    navigate({
+      pathname: `/search`,
+      search: createSearchParams(newSearchParams).toString(),
+    });
+  };
+  const handleInputEmail = (e) => {
+    setEmail(e.target.value);
+
+    let newSearchParams = {
+      ...queryParams,
+      email: e.target.value,
+    };
+    if (e.target.value === "") {
+      delete newSearchParams.email;
     }
     navigate({
       pathname: `/search`,
@@ -272,11 +394,17 @@ const FindPlayer = () => {
     delete queryParams.highSchool;
     delete queryParams.achievement;
     delete queryParams.hobby;
+    delete queryParams.username;
+    delete queryParams.phone;
+    delete queryParams.email;
+    setUsername("");
+    setPhone("");
+    setEmail("");
     setWorkplace("");
     setUniversity("");
     setHighSchool("");
     setAchievement("");
-    setHobby([]);
+    setHobby("");
     setAddress("");
     setProvince("Chọn tỉnh");
     setDistrict("Chọn huyện");
@@ -291,18 +419,62 @@ const FindPlayer = () => {
     fetchUserByAchievement();
     fetchAddressData();
     fetchUserByHobby();
-  }, [params]);
+  }, [queryParams]);
   return (
     <div className=" min-h-[513px] flex">
       <div className="w-3/4 bg-gray-100 p-5">
         <div>
-          <div className="flex justify-between">
+          <div className="">
+            <div className="flex justify-between">
+              <p className="font-bold">Tìm kiếm theo thông tin cơ bản</p>
+              <ReloadOutlined
+                style={{ fontSize: "20px" }}
+                className="pr-2 cursor-pointer hover:text-blue-500"
+                onClick={handleRefresh}
+              />
+            </div>
+
+            <div className="flex gap-3 pt-5 pr-5 pl-10">
+              <div className="w-80 p-3 border border-blue-500 outline-none rounded bg-white">
+                <div className="flex items-center ">
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={handleInputUsername}
+                    placeholder="Nhập username..."
+                    style={{ outline: "none" }}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+              <div className="w-80 p-3 border border-blue-500 outline-none rounded bg-white">
+                <div className="flex items-center ">
+                  <input
+                    type="text"
+                    value={phone}
+                    onChange={handleInputPhone}
+                    placeholder="Nhập số điện thoai..."
+                    style={{ outline: "none" }}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+              <div className="w-80 p-3 border border-blue-500 outline-none rounded bg-white">
+                <div className="flex items-center ">
+                  <input
+                    type="text"
+                    value={email}
+                    onChange={handleInputEmail}
+                    placeholder="Nhập email..."
+                    style={{ outline: "none" }}
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-between pt-5">
             <p className="font-bold">Tìm kiếm theo địa điểm</p>
-            <ReloadOutlined
-              style={{ fontSize: "20px" }}
-              className="pr-2 cursor-pointer hover:text-blue-500"
-              onClick={handleRefresh}
-            />
           </div>
 
           <div className="flex gap-3 pt-5 pr-5 pl-10">
@@ -462,7 +634,11 @@ const FindPlayer = () => {
       <div className="w-1/4 bg-green-200">
         {Object.keys(queryParams).length === 0
           ? ""
-          : hobby !== "" || achievement !== ""
+          : hobby !== "" ||
+            achievement !== "" ||
+            username !== "" ||
+            phone !== "" ||
+            email !== ""
           ? matchingUsers.map(
               (user) =>
                 user.user.id != loginUserID && (

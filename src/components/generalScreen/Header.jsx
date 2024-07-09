@@ -18,6 +18,7 @@ import { createMember } from "../../apis/memberApi";
 import GroupSidebar from "../group/GroupSidebar";
 import useQueryParams from "../../hooks/useQueryParams";
 import { createInformation } from "../../apis/informationApi";
+import { toast } from "react-toastify";
 const Header = () => {
   const { queryParams, navigate } = useQueryParams();
   const userID = localStorage.getItem("userId");
@@ -63,6 +64,7 @@ const Header = () => {
           setTest({ imgFile: null, imgSrc: "" });
           const data = { userID: parseInt(userID), groupID: response.data.id };
           const res = await createMember(data);
+          toast.success("Tạo nhóm thành công");
         }
         // openNotificationWithIcon(
         //   "SUCCESS",
@@ -195,12 +197,6 @@ const Header = () => {
                 ) : null}
               </div>
 
-              <Link to="/readList" className="readList-link">
-                <BsBookmarks />
-                {/* <span id="readListLength">
-                                    {activeUser.readListLength}
-                                </span> */}
-              </Link>
               <div className="header-profile-wrapper ">
                 {/* {loading ? <SkeletonElement type="minsize-avatar" />
 

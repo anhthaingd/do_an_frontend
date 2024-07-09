@@ -78,8 +78,8 @@ const MatchCard = ({ match, fetchMatch, date, locationID }) => {
   );
   return (
     <div className="w-full">
-      <div className=" w-full">
-        <div className="border border-blue-500 p-2 grid grid-cols-6 h-16 rounded shadow-lg  bg-white m-2 z-10">
+      <div className="h-full w-full">
+        <div className="border border-blue-500 grid grid-cols-8 h-16 rounded shadow-lg m-2 bg-white p-2 z-10">
           <img
             src="https://tse3.mm.bing.net/th?id=OIP.hzI0H-nVKBNmz28kT8m2ugHaHa&pid=Api&P=0&h=180"
             alt="s"
@@ -89,21 +89,21 @@ const MatchCard = ({ match, fetchMatch, date, locationID }) => {
           <div className="flex  items-center text-red-500">
             {match?.playground?.name}
           </div>
-          <div className="pr-2">
+          <div className="pr-2 col-span-2">
             <div>Tên: {owner?.username}</div>
             <div>Sđt: {owner?.phone}</div>
           </div>
-          <div className="col-span-2">
+          <div className="col-span-3">
             <div>
               Thời gian: {match.start_time} - {match.end_time}
             </div>
-            <div>Giá: {match.price}</div>
+            <div>Giá: {match.price}đ</div>
           </div>
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center pr-8">
             {(() => {
               if (match.status == 1 || matchTime < today || !match.isPublic) {
                 return (
-                  <Button type="" className="bg-gray-400 " disabled>
+                  <Button type="" className="bg-gray-400" disabled>
                     {match.status == 1 || !match.isPublic
                       ? "Đã ghép cặp"
                       : "Đã quá hạn"}

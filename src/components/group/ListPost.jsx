@@ -26,6 +26,7 @@ const ListPost = ({ group }) => {
       setLoading(false);
       setIsModalOpen(false);
       savePost();
+      // window.location.reload();
     }, 3000);
   };
   const handleCancel = () => {

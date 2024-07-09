@@ -20,6 +20,17 @@ const MatchModal = ({ isOpen, onClose, match, fetchMatch }) => {
   const [myGroup, setMyGroup] = useState([]);
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
+  const checkCanEdit = () => {
+    if (
+      loginUserID == match?.ownerID ||
+      loginUserID == match?.opponentID ||
+      loginUserID == match?.location?.ownerID
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
   const handleUpdate = async () => {
     const res = await updateMatch(match.id, { result: score, note: notes });
     console.log(res);
@@ -100,7 +111,7 @@ const MatchModal = ({ isOpen, onClose, match, fetchMatch }) => {
             />
             <EditableField
               label="Đối thủ"
-              value={opponentUsername}
+              value={match?.opponent?.username || "Chưa có"}
               onChange={setOpponentUsername}
               canEdit={false}
               user={match?.opponent}
@@ -109,7 +120,7 @@ const MatchModal = ({ isOpen, onClose, match, fetchMatch }) => {
               label="Tỉ số"
               value={score}
               onChange={setScore}
-              canEdit={true}
+              canEdit={checkCanEdit()}
             />
             <EditableField
               label="Thời gian"
@@ -126,7 +137,7 @@ const MatchModal = ({ isOpen, onClose, match, fetchMatch }) => {
               label="Ghi chú"
               value={notes}
               onChange={setNotes}
-              canEdit={true}
+              canEdit={checkCanEdit()}
             />
           </div>
         </div>

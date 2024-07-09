@@ -15,18 +15,18 @@ const ListMember = ({ listMember, group }) => {
             {listMember.length}
           </span>
         </div>
-        <div className="p-3 border-b-gray-300 border-b-2 mx-2">
-          <input
+        <div className="p-1 border-b-gray-300 border-b-2 mx-2">
+          {/* <input
             type="text"
             placeholder="Tìm kiếm thành viên"
             className="w-full p-2  rounded bg-gray-500 text-white focus:outline-none"
-          />
+          /> */}
         </div>
         <div className="p-2">
           <p className="text-base font-medium">Quản trị viên</p>
           <div className="pt-4 flex items-center pl-2">
             <img src={avatar} className="w-12 rounded-full" alt="" />
-            <p className="ml-3">{owner.user.username}</p>
+            <p className="ml-3">{owner?.user?.username}</p>
           </div>
         </div>
         <div className="p-2">

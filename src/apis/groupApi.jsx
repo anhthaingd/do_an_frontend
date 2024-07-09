@@ -40,4 +40,14 @@ export const getAllGroup = () => {
     .catch((error) => {
       throw error;
     });
-}
+};
+
+export const deleteGroup = (id) => {
+  return Api.delete(`/group/${id}`)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+};

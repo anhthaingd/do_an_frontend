@@ -4,6 +4,7 @@ import Footer from "../components/generalScreen/Footer";
 import { Tabs } from "antd";
 import ManageUser from "../components/admin/ManageUser";
 import ManageLocation from "../components/admin/ManageLocation";
+import ManageGroup from "../components/admin/ManageGroup";
 
 const AdminPage = () => {
   const items = [
@@ -24,6 +25,12 @@ const AdminPage = () => {
       label: "Quản lý sân",
       children: "Content of Tab Pane 2",
       content: <ManageLocation />, // Component cho nội dung tab 2
+    },
+    {
+      key: "4",
+      label: "Quản lý nhóm",
+      children: "Content of Tab Pane 2",
+      content: <ManageGroup />, // Component cho nội dung tab 2
     },
   ];
   return (

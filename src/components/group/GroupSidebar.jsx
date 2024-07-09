@@ -20,7 +20,7 @@ const GroupSidebar = ({ isOpen, onClose, dropdownRef }) => {
   return (
     <div
       ref={dropdownRef}
-      className={`absolute top-12 right-0 mt-5 z-30 w-80 bg-gray-800 text-white rounded-lg shadow-lg transition-all duration-300 ${
+      className={`absolute top-12 right-0 mt-5 z-30 w-80 bg-gray-700 text-white rounded-lg shadow-lg transition-all duration-300 ${
         isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >

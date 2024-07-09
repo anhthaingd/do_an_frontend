@@ -49,6 +49,7 @@ import {
 import ModalEdit from "../components/location/ModalEdit";
 import MapCantClick from "../components/map/MapCantClick";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 const LocationDetail = ({ setActiveTab }) => {
   const locationID = useParams().id;
   const [location, setLocation] = useState({});
@@ -206,6 +207,7 @@ const LocationDetail = ({ setActiveTab }) => {
   const handleOk1 = async () => {
     setIsModalOpen(false);
     await deleteLocation(locationID);
+    toast.success("Xóa sân thành công");
     // fetchMatch(date, locationID);
     navigate("/");
   };
