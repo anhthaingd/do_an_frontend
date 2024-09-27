@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 // import { AuthContext } from '../../Context/AuthContext';
 import * as actions from "../../store/actions";
 import Modal from "antd/es/modal/Modal";
-import { Button, Form, Input, InputNumber } from "antd";
+import { Button, Form, Input, InputNumber, Switch } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { createGroup } from "../../apis/groupApi";
 import { createMember } from "../../apis/memberApi";
@@ -19,6 +19,12 @@ import GroupSidebar from "../group/GroupSidebar";
 import useQueryParams from "../../hooks/useQueryParams";
 import { createInformation } from "../../apis/informationApi";
 import { toast } from "react-toastify";
+import { BellOutlined } from "@ant-design/icons";
+import {
+  getMatchByStatus,
+  getMatchByStatusAndOwnerID,
+} from "../../apis/matchApi";
+import Notification from "../group/Notification";
 const Header = () => {
   const { queryParams, navigate } = useQueryParams();
   const userID = localStorage.getItem("userId");
@@ -27,12 +33,21 @@ const Header = () => {
   const { role } = useSelector((state) => state.auth);
   const [auth, setAuth] = useState(bool);
   const { isLoggedIn } = useSelector((state) => state.auth);
+  const [isPrivate, setIsPrivate] = useState(false);
   // const { activeUser } = useContext(AuthContext)
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState("");
+  const [numberPending, setNumberPending] = useState(0);
+  const [listMatch, setListMatch] = useState([]);
+  const fetchNotification = async () => {
+    const data = { status: 3, ownerID: parseInt(userID) };
+    const res = await getMatchByStatusAndOwnerID(data);
+    setNumberPending(res.data.length);
+    setListMatch(res.data);
+  };
   const saveGroup = async (e) => {
     try {
       const data = new FormData();
@@ -55,6 +70,7 @@ const Header = () => {
         name,
         description,
         image: img,
+        is_private: !isPrivate,
       };
       try {
         const response = await createGroup(group);
@@ -62,7 +78,11 @@ const Header = () => {
           setDescription("");
           setName("");
           setTest({ imgFile: null, imgSrc: "" });
-          const data = { userID: parseInt(userID), groupID: response.data.id };
+          const data = {
+            userID: parseInt(userID),
+            groupID: response.data.id,
+            isJoined: true,
+          };
           const res = await createMember(data);
           toast.success("Tạo nhóm thành công");
         }
@@ -77,6 +97,9 @@ const Header = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+  const handleSwitch = (checked) => {
+    setIsPrivate(checked);
   };
   const showModal = () => {
     setIsModalOpen(true);
@@ -93,6 +116,7 @@ const Header = () => {
     setIsModalOpen(false);
   };
   useEffect(() => {
+    fetchNotification();
     setAuth(bool);
     setTimeout(() => {
       setLoading(false);
@@ -143,12 +167,17 @@ const Header = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+  const [isSidebarOpenNoti, setIsSidebarOpenNoti] = useState(false);
+  const dropdownRefNoti = useRef(null);
+
+  const toggleSidebarNoti = () => {
+    setIsSidebarOpenNoti(!isSidebarOpenNoti);
+  };
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsSidebarOpen(false);
     }
   };
-
   return (
     <header>
       <div className="averager">
@@ -196,6 +225,22 @@ const Header = () => {
                   </button>
                 ) : null}
               </div>
+              <button to="/readList" className="relative readList-link">
+                <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
+                  {numberPending}
+                </span>
+                <BellOutlined
+                  className="text-3xl"
+                  onClick={toggleSidebarNoti}
+                />
+              </button>
+              <Notification
+                isOpenNoti={isSidebarOpenNoti}
+                onCloseNoti={toggleSidebarNoti}
+                dropdownRefNoti={dropdownRefNoti}
+                listMatch={listMatch}
+                fetchNotification={fetchNotification}
+              />
 
               <div className="header-profile-wrapper ">
                 {/* {loading ? <SkeletonElement type="minsize-avatar" />
@@ -280,18 +325,20 @@ const Header = () => {
             maxWidth: 1000,
           }}
         >
-          <Form.Item label="Name">
+          <Form.Item label="Tên nhóm">
             <Input onChange={(e) => setName(e.target.value)} value={name} />
           </Form.Item>
 
-          <Form.Item label="Description">
+          <Form.Item label="Mô tả">
             <TextArea
               onChange={(event) => setDescription(event.target.value)}
               value={description}
             />
           </Form.Item>
-
-          <Form.Item label="Image ">
+          <Form.Item label="Công khai">
+            <Switch value={isPrivate} onChange={handleSwitch} />
+          </Form.Item>
+          <Form.Item label="Ảnh ">
             <input
               type="file"
               accept="image/*"

@@ -4,8 +4,10 @@ import React, { useEffect, useState } from "react";
 import LocationDetail from "./LocationDetail";
 import ListMatch from "../components/ListMatch";
 import { Link, NavLink, Outlet, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const LocationPage = () => {
+  const { role } = useSelector((state) => state.auth);
   const [activeTab, setActiveTab] = useState("1");
   const locationID = useParams().id;
 
@@ -42,6 +44,21 @@ const LocationPage = () => {
         >
           Sân đã đặt{" "}
         </NavLink>
+        {role == 1 ? (
+          <NavLink
+            end
+            className={({ isActive }) =>
+              `p-2 cursor-pointer hover:bg-gray-200 hover:text-blue-500 ${
+                isActive ? "text-blue-500" : ""
+              }`
+            }
+            to={"/location/" + locationID + "/confirm"}
+          >
+            Chờ xác nhận{" "}
+          </NavLink>
+        ) : (
+          ""
+        )}
       </div>
       <div className="w-5/6">
         <Outlet />

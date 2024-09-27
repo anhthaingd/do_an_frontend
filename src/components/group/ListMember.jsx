@@ -1,10 +1,22 @@
 import React from "react";
 import avatar from "../../images/avatar.jpg";
-const ListMember = ({ listMember, group }) => {
+import { DeleteOutlined } from "@ant-design/icons";
+import { deleteMember } from "../../apis/memberApi";
+const ListMember = ({ listMember, group, fetchCountMember }) => {
   const owner = listMember.find((member) => member.userID === group.ownerID);
   const nonOwners = listMember.filter(
     (member) => member.userID !== group.ownerID
   );
+  const userID = localStorage.getItem("userId");
+  const handleDelete = async (id) => {
+    const data = {
+      userID: id,
+      groupID: group?.id,
+    };
+    console.log(data);
+    const res = await deleteMember(data);
+    fetchCountMember();
+  };
   console.log(nonOwners);
   return (
     <div className="flex items-center justify-center">
@@ -39,6 +51,17 @@ const ListMember = ({ listMember, group }) => {
               >
                 <img src={avatar} className="w-12 rounded-full" alt="" />
                 <p className="ml-3">{member.user.username}</p>
+                {userID == group.ownerID ? (
+                  <p style={{ paddingLeft: "550px" }}>
+                    <DeleteOutlined
+                      style={{ fontSize: "20px" }}
+                      className="cursor-pointer"
+                      onClick={() => handleDelete(member.userID)}
+                    />
+                  </p>
+                ) : (
+                  ""
+                )}
               </div>
             ))}
           </div>

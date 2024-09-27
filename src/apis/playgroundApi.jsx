@@ -47,3 +47,15 @@ export const deletePlayground = (id) => {
       throw error;
     });
 };
+
+export const searchPlayground = (queryParams) => {
+  return Api.get(`/playground/search`, { params: queryParams })
+    .then((response) => {
+      // Xử lý dữ liệu trả về từ response ở đây
+      return response.data;
+    })
+    .catch((error) => {
+      // Xử lý lỗi ở đây
+      throw error;
+    });
+};

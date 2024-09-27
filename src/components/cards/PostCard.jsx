@@ -17,7 +17,7 @@ import CommentSidebar from "../location/CommentSidebar";
 import { getCommentsByPostID } from "../../apis/commentPostApi";
 import EditableField from "../modal/EditableField";
 import { getMatchByID } from "../../apis/matchApi";
-const PostCard = ({ post }) => {
+const PostCard = ({ post, joinStatus }) => {
   const userID = localStorage.getItem("userId");
   const [activeUser, setActiveUser] = useState({});
   const [likeStatus, setLikeStatus] = useState(false);
@@ -208,41 +208,45 @@ const PostCard = ({ post }) => {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-2 border-2 border-b-gray-300">
-        <div className=" p-1 rounded-md" onClick={handleLike}>
-          {likeStatus ? (
-            <div className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md">
-              <LikeOutlined style={{ fontSize: "24px", color: "blue" }} />
-              <p className="font-semibold ml-1 text-blue-800">Thích</p>
-            </div>
-          ) : (
-            <div className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md">
-              <LikeOutlined style={{ fontSize: "24px" }} />
-              <p className="font-semibold ml-1">Thích</p>
-            </div>
-          )}
+      {joinStatus ? (
+        <div className="grid grid-cols-2 border-2 border-b-gray-300">
+          <div className=" p-1 rounded-md" onClick={handleLike}>
+            {likeStatus ? (
+              <div className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md">
+                <LikeOutlined style={{ fontSize: "24px", color: "blue" }} />
+                <p className="font-semibold ml-1 text-blue-800">Thích</p>
+              </div>
+            ) : (
+              <div className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md">
+                <LikeOutlined style={{ fontSize: "24px" }} />
+                <p className="font-semibold ml-1">Thích</p>
+              </div>
+            )}
+          </div>
+          <div
+            className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md"
+            onClick={() => {
+              setSidebarShowStatus(!sidebarShowStatus);
+            }}
+          >
+            <CommentOutlined style={{ fontSize: "24px" }} />
+            <p className="font-semibold ml-1">Bình luận</p>
+          </div>
+          <div className="CommentFieldEmp">
+            <CommentSidebar
+              locationID={post.id}
+              sidebarShowStatus={sidebarShowStatus}
+              setSidebarShowStatus={setSidebarShowStatus}
+              activeUser={activeUser}
+              setCommentCount={setCommentCount}
+              isPost={true}
+              isUserPost={false}
+            />
+          </div>
         </div>
-        <div
-          className="flex justify-center items-center cursor-pointer hover:bg-gray-300 p-1 rounded-md"
-          onClick={() => {
-            setSidebarShowStatus(!sidebarShowStatus);
-          }}
-        >
-          <CommentOutlined style={{ fontSize: "24px" }} />
-          <p className="font-semibold ml-1">Bình luận</p>
-        </div>
-        <div className="CommentFieldEmp">
-          <CommentSidebar
-            locationID={post.id}
-            sidebarShowStatus={sidebarShowStatus}
-            setSidebarShowStatus={setSidebarShowStatus}
-            activeUser={activeUser}
-            setCommentCount={setCommentCount}
-            isPost={true}
-            isUserPost={false}
-          />
-        </div>
-      </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

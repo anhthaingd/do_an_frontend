@@ -60,6 +60,9 @@ const LocationDetail = ({ setActiveTab }) => {
   const [length, setLength] = useState();
   const [price, setPrice] = useState();
   const [type, setType] = useState();
+  const [isOutdoor, setIsOutdoor] = useState();
+  const [yardSurface, setYardSurface] = useState();
+  const [quantity, setQuantity] = useState();
   const [activeUser, setActiveUser] = useState({});
   const [sidebarShowStatus, setSidebarShowStatus] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
@@ -115,7 +118,6 @@ const LocationDetail = ({ setActiveTab }) => {
   let averageStars = (totalStars / numberRate).toFixed(1);
   const handleUpdateLocation = async () => {
     const res = await updateLocation(locationID, { rating: averageStars });
-    console.log(res);
   };
   const fetchData = async () => {
     try {
@@ -151,7 +153,9 @@ const LocationDetail = ({ setActiveTab }) => {
       width: width,
       length: length,
       price: price,
-      type: type,
+      position: isOutdoor,
+      yard_surface: yardSurface,
+      quantity: quantity,
     };
     try {
       for (let i = 0; i < numberPlayground; i++) {
@@ -398,6 +402,7 @@ const LocationDetail = ({ setActiveTab }) => {
                   index={index}
                   fetchPlayground={fetchPlayground}
                   ownerID={location?.owner?.id}
+                  location={location}
                 />
               </div>
             );
@@ -446,25 +451,115 @@ const LocationDetail = ({ setActiveTab }) => {
           {/* <Form.Item label="Name">
             <Input onChange={(e) => setWidth(e.target.value)} value={width} />
           </Form.Item> */}
-          <Form.Item label="Width">
+          <Form.Item label="Chiều rộng">
             <Input onChange={(e) => setWidth(e.target.value)} value={width} />
           </Form.Item>
-          <Form.Item label="Length">
+          <Form.Item label="Chiều dài">
             <Input onChange={(e) => setLength(e.target.value)} value={length} />
           </Form.Item>
-          <Form.Item label="Price">
+          <Form.Item label="Giá">
             <Input onChange={(e) => setPrice(e.target.value)} value={price} />
           </Form.Item>
-          <Form.Item label="Type">
-            <Select onChange={(value) => setType(value)}>
-              <Select.Option key="0" value="0">
-                Thường
+          <Form.Item label="Vị trí">
+            <Select value={isOutdoor} onChange={(value) => setIsOutdoor(value)}>
+              <Select.Option key="t" value="Trong nhà">
+                Trong nhà
               </Select.Option>
-              <Select.Option key="1" value="1">
-                Vip
+              <Select.Option key="n" value="Ngoài trời">
+                Ngoài trời
               </Select.Option>
             </Select>
           </Form.Item>
+          {location?.type == 0 ? (
+            <Form.Item label="Bề mặt sân">
+              <Select
+                // defaultValue={getTypeLabel(type)}
+                onChange={(value) => setYardSurface(value)}
+                value={yardSurface}
+              >
+                <Select.Option key="a" value="Sân futsal">
+                  Sân futsal
+                </Select.Option>
+                <Select.Option key="b" value="Sân cỏ tự nhiên">
+                  Sân cỏ tự nhiên
+                </Select.Option>
+                <Select.Option key="c" value="Sân cỏ nhân tạo">
+                  Sân cỏ nhân tạo
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          ) : location?.type == 1 ? (
+            <Form.Item label="Bề mặt sân">
+              <Select
+                onChange={(value) => setYardSurface(value)}
+                value={yardSurface}
+              >
+                <Select.Option key="g" value="Sàn gỗ">
+                  Sàn gỗ
+                </Select.Option>
+                <Select.Option key="t" value="Sàn thảm PVC">
+                  Sàn thảm PVC
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          ) : location?.type == 2 ? (
+            <Form.Item label="Bề mặt sân">
+              <Select
+                onChange={(value) => setYardSurface(value)}
+                value={yardSurface}
+              >
+                <Select.Option key="3" value="Sân đất nện">
+                  Sân đất nện
+                </Select.Option>
+                <Select.Option key="4" value="Sân cỏ">
+                  Sân cỏ
+                </Select.Option>
+                <Select.Option key="5" value="Sân cứng tiêu chuẩn">
+                  Sân cứng tiêu chuẩn
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          ) : location?.type == 4 || location?.type == 5 ? (
+            <Form.Item label="Bề mặt sân">
+              <Select
+                onChange={(value) => setYardSurface(value)}
+                value={yardSurface}
+              >
+                <Select.Option key="6" value="Sân gỗ">
+                  Sân gỗ
+                </Select.Option>
+                <Select.Option key="7" value="Sân nhựa tổng hợp">
+                  Sân nhựa tổng hợp
+                </Select.Option>
+                <Select.Option key="8" value="Sân bê tông">
+                  Sân bê tông
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          ) : (
+            ""
+          )}
+          {location?.type == 0 ? (
+            <Form.Item label="Số lượng">
+              <Select
+                // defaultValue={getTypeLabel(type)}
+                onChange={(value) => setQuantity(value)}
+                value={quantity}
+              >
+                <Select.Option key="9" value="Sân 5 người">
+                  Sân 5 người
+                </Select.Option>
+                <Select.Option key="10" value="Sân 7 người">
+                  Sân 7 người
+                </Select.Option>
+                <Select.Option key="11" value="Sân 11 người">
+                  Sân 11 người
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          ) : (
+            ""
+          )}
         </Form>
       </Modal>
       <div className="CommentFieldEmp">

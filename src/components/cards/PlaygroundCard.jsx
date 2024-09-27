@@ -3,6 +3,8 @@ import {
   ColumnWidthOutlined,
   EuroCircleOutlined,
   FunnelPlotOutlined,
+  HomeOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { Button, Card, Form, Input, InputNumber, Select, Switch } from "antd";
 import Modal from "antd/es/modal/Modal";
@@ -31,7 +33,13 @@ const { Meta } = Card;
 const dateFormatList = ["DD/MM/YYYY", "DD/MM/YY", "DD-MM-YYYY", "DD-MM-YY"];
 const role = localStorage.getItem("role");
 
-const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
+const PlaygroundCard = ({
+  playground,
+  index,
+  fetchPlayground,
+  ownerID,
+  location,
+}) => {
   const userID = localStorage.getItem("userId");
   const locationID = useParams().id;
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,6 +57,9 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
   const [disableButton, setDisableButton] = useState(false);
   const [checkStartTime, setCheckStartTime] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
+  const [isOutdoor, setIsOutdoor] = useState(playground.position);
+  const [yardSurface, setYardSurface] = useState(playground.yard_surface);
+  const [quantity, setQuantity] = useState(playground.quantity);
   const navigate = useNavigate();
   const showModal = () => {
     ownerID == userID ? setIsOpenEdit(true) : setIsModalOpen(true);
@@ -100,7 +111,7 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
         start_time: startTime,
         end_time: endTime,
         price: roundTime(startTime, endTime) * playground.price,
-        status: 0,
+        status: 2,
         isPublic,
       };
       const res = await createMatch(data);
@@ -150,7 +161,9 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
         width: width,
         length: length,
         price: price,
-        type: type,
+        position: isOutdoor,
+        yard_surface: yardSurface,
+        quantity: quantity,
       };
       await updatePlayground(playground.id, data);
       fetchPlayground(locationID);
@@ -342,7 +355,7 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
       <Card
         hoverable
         style={{
-          width: 240,
+          width: 270,
         }}
         cover={(() => {
           if (playground.location.type === 0) {
@@ -399,21 +412,41 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
         <div className="flex justify-between">
           <div>
             <ColumnWidthOutlined className="mr-1" />
-            Width: {playground.width}
+            Chiều rộng: {playground.width}m
           </div>
           <div>
-            <ColumnHeightOutlined className="mr-1" />
-            Length: {playground.length}
+            <EuroCircleOutlined className="mr-1" />
+            Price: {playground.price}$
           </div>
         </div>
         <div className="flex justify-between pt-1">
           <div>
-            <EuroCircleOutlined className="mr-1" />
-            Price: {playground.price}
+            <ColumnHeightOutlined className="mr-1" />
+            Chiều dài: {playground.length}m
           </div>
+          {playground?.quantity ? (
+            <div>
+              <UserOutlined className="mr-1" />
+              {playground?.quantity}
+            </div>
+          ) : null}
+        </div>
+        <div className="flex justify-between pt-1">
           <div>
-            <FunnelPlotOutlined />
-            Type: {playground.type === 0 ? "Thường" : "Vip"}
+            {playground?.yard_surface ? (
+              <div>
+                <FunnelPlotOutlined className="mr-1" />{" "}
+                {playground?.yard_surface}
+              </div>
+            ) : null}
+          </div>
+
+          <div>
+            {playground?.position ? (
+              <div>
+                <HomeOutlined className="mr-1" /> {playground?.position}
+              </div>
+            ) : null}
           </div>
         </div>
       </Card>
@@ -535,32 +568,118 @@ const PlaygroundCard = ({ playground, index, fetchPlayground, ownerID }) => {
             maxWidth: 1000,
           }}
         >
-          <Form.Item label="Name">
+          <Form.Item label="Tên">
             <Input onChange={(e) => setName(e.target.value)} value={name} />
           </Form.Item>
-          <Form.Item label="Width">
+          <Form.Item label="Chiều rộng">
             <Input onChange={(e) => setWidth(e.target.value)} value={width} />
           </Form.Item>
-          <Form.Item label="Length">
+          <Form.Item label="Chiều dài ">
             <Input onChange={(e) => setLength(e.target.value)} value={length} />
           </Form.Item>
-          <Form.Item label="Price">
+          <Form.Item label="Giá">
             <Input onChange={(e) => setPrice(e.target.value)} value={price} />
           </Form.Item>
-          <Form.Item label="Type">
-            <Select
-              defaultValue={getTypeLabel(type)}
-              onChange={(value) => setType(value)}
-              // value={type === "0" ? "0" : "1"}
-            >
-              <Select.Option key="0" value="0">
-                Thường
+          <Form.Item label="Vị trí">
+            <Select value={isOutdoor} onChange={(value) => setIsOutdoor(value)}>
+              <Select.Option key="t" value="Trong nhà">
+                Trong nhà
               </Select.Option>
-              <Select.Option key="1" value="1">
-                Vip
+              <Select.Option key="n" value="Ngoài trời">
+                Ngoài trời
               </Select.Option>
             </Select>
           </Form.Item>
+          {location?.type == 0 ? (
+            <Form.Item label="Bề mặt sân">
+              <Select
+                // defaultValue={getTypeLabel(type)}
+                onChange={(value) => setYardSurface(value)}
+                value={yardSurface}
+              >
+                <Select.Option key="a" value="Sân futsal">
+                  Sân futsal
+                </Select.Option>
+                <Select.Option key="b" value="Sân cỏ tự nhiên">
+                  Sân cỏ tự nhiên
+                </Select.Option>
+                <Select.Option key="c" value="Sân cỏ nhân tạo">
+                  Sân cỏ nhân tạo
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          ) : location?.type == 1 ? (
+            <Form.Item label="Bề mặt sân">
+              <Select
+                onChange={(value) => setYardSurface(value)}
+                value={yardSurface}
+              >
+                <Select.Option key="g" value="Sàn gỗ">
+                  Sàn gỗ
+                </Select.Option>
+                <Select.Option key="t" value="Sàn thảm PVC">
+                  Sàn thảm PVC
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          ) : location?.type == 2 ? (
+            <Form.Item label="Bề mặt sân">
+              <Select
+                onChange={(value) => setYardSurface(value)}
+                value={yardSurface}
+              >
+                <Select.Option key="3" value="Sân đất nện">
+                  Sân đất nện
+                </Select.Option>
+                <Select.Option key="4" value="Sân cỏ">
+                  Sân cỏ
+                </Select.Option>
+                <Select.Option key="5" value="Sân cứng tiêu chuẩn">
+                  Sân cứng tiêu chuẩn
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          ) : location?.type == 4 || location?.type == 5 ? (
+            <Form.Item label="Bề mặt sân">
+              <Select
+                onChange={(value) => setYardSurface(value)}
+                value={yardSurface}
+              >
+                <Select.Option key="6" value="Sân gỗ">
+                  Sân gỗ
+                </Select.Option>
+                <Select.Option key="7" value="Sân nhựa tổng hợp">
+                  Sân nhựa tổng hợp
+                </Select.Option>
+                <Select.Option key="8" value="Sân bê tông">
+                  Sân bê tông
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          ) : (
+            ""
+          )}
+          {location?.type == 0 ? (
+            <Form.Item label="Số lượng">
+              <Select
+                // defaultValue={getTypeLabel(type)}
+                onChange={(value) => setQuantity(value)}
+                value={quantity}
+              >
+                <Select.Option key="9" value="Sân 5 người">
+                  Sân 5 người
+                </Select.Option>
+                <Select.Option key="10" value="Sân 7 người">
+                  Sân 7 người
+                </Select.Option>
+                <Select.Option key="11" value="Sân 11 người">
+                  Sân 11 người
+                </Select.Option>
+              </Select>
+            </Form.Item>
+          ) : (
+            ""
+          )}
         </Form>
       </Modal>
     </div>

@@ -38,6 +38,7 @@ import Job from "./components/profile/about/Job";
 import FindPlayer from "./pages/FindPlayer";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PendingMatch from "./components/PendingMatch";
 function App() {
   const role = localStorage.getItem("role");
   return (
@@ -62,6 +63,7 @@ function App() {
               <Route exact path="/location" element={<LocationPage />}>
                 <Route exact path=":id" element={<LocationDetail />} />
                 <Route exact path=":id/booking" element={<ListMatch />} />
+                <Route exact path=":id/confirm" element={<PendingMatch />} />
               </Route>
               <Route exact path="/group/:id" element={<Group />} />
               <Route exact path="/groups" element={<AllGroup />} />

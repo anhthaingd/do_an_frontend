@@ -44,7 +44,7 @@ const MatchCard = ({ match, fetchMatch, date, locationID }) => {
 
   const handleOk = async () => {
     setIsModalOpen(false);
-    await updateMatch(match.id, { opponentID: userID, status: 1 });
+    await updateMatch(match.id, { opponentID: userID, status: 3 });
     fetchMatch(date, locationID);
   };
   const handleOk1 = async () => {
@@ -76,80 +76,97 @@ const MatchCard = ({ match, fetchMatch, date, locationID }) => {
     parseInt(matchTimeParts[0]),
     parseInt(matchTimeParts[1])
   );
+  console.log(match.status);
   return (
     <div className="w-full">
-      <div className="h-full w-full">
-        <div className="border border-blue-500 grid grid-cols-8 h-16 rounded shadow-lg m-2 bg-white p-2 z-10">
-          <img
-            src="https://tse3.mm.bing.net/th?id=OIP.hzI0H-nVKBNmz28kT8m2ugHaHa&pid=Api&P=0&h=180"
-            alt="s"
-            className="w-12 ml-3 cursor-pointer"
-            onClick={openPopup}
-          />
-          <div className="flex  items-center text-red-500">
-            {match?.playground?.name}
-          </div>
-          <div className="pr-2 col-span-2">
-            <div>Tên: {owner?.username}</div>
-            <div>Sđt: {owner?.phone}</div>
-          </div>
-          <div className="col-span-3">
-            <div>
-              Thời gian: {match.start_time} - {match.end_time}
+      {match?.status != 2 ? (
+        <>
+          <div className="h-full w-full">
+            <div className="border border-blue-500 grid grid-cols-8 h-16 rounded shadow-lg m-2 bg-white p-2 z-10">
+              <img
+                src="https://png.pngtree.com/png-clipart/20230813/original/pngtree-two-crossed-swords-simple-flat-design-hack-outline-sword-vector-png-image_10313739.png"
+                alt="s"
+                className="w-12 ml-3 cursor-pointer"
+                onClick={openPopup}
+              />
+              <div className="flex  items-center text-red-500">
+                {match?.playground?.name}
+              </div>
+              <div className="pr-2 col-span-2">
+                <div>Tên: {owner?.username}</div>
+                <div>Sđt: {owner?.phone}</div>
+              </div>
+              <div className="col-span-3">
+                <div>
+                  Thời gian: {match.start_time} - {match.end_time}
+                </div>
+                <div>Giá: {match.price}đ</div>
+              </div>
+              <div className="flex justify-center items-center pr-8">
+                {(() => {
+                  if (
+                    match?.status == 4 ||
+                    matchTime < today ||
+                    !match?.isPublic
+                  ) {
+                    return (
+                      <Button type="" className="bg-gray-400" disabled>
+                        {match?.status == 4 || !match.isPublic
+                          ? "Đã ghép cặp"
+                          : "Đã quá hạn"}
+                      </Button>
+                    );
+                  } else if (userID == match.ownerID) {
+                    return (
+                      <Button type="primary" danger onClick={handleDelete}>
+                        Xóa
+                      </Button>
+                    );
+                  } else if (match?.status == 1) {
+                    return (
+                      <Button type="primary" onClick={handleChallenge}>
+                        Thách đấu
+                      </Button>
+                    );
+                  } else if (match?.status == 3) {
+                    return (
+                      <Button type="primary" className="bg-yellow-400" disabled>
+                        Đang chờ
+                      </Button>
+                    );
+                  }
+                })()}
+              </div>
+              <Modal
+                title="Bạn có chắc chắn muốn thách đấu với người này không?"
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                okText="Có"
+                cancelText="Không"
+              ></Modal>
+              <Modal
+                title="Bạn có chắc chắn muốn hủy trận đấu?"
+                open={isModalOpen1}
+                onOk={handleOk1}
+                onCancel={handleCancel1}
+                okText="Có"
+                cancelText="Không"
+              ></Modal>
             </div>
-            <div>Giá: {match.price}đ</div>
           </div>
-          <div className="flex justify-center items-center pr-8">
-            {(() => {
-              if (match.status == 1 || matchTime < today || !match.isPublic) {
-                return (
-                  <Button type="" className="bg-gray-400" disabled>
-                    {match.status == 1 || !match.isPublic
-                      ? "Đã ghép cặp"
-                      : "Đã quá hạn"}
-                  </Button>
-                );
-              } else if (userID == match.ownerID) {
-                return (
-                  <Button type="primary" danger onClick={handleDelete}>
-                    Xóa
-                  </Button>
-                );
-              } else {
-                return (
-                  <Button type="primary" onClick={handleChallenge}>
-                    Thách đấu
-                  </Button>
-                );
-              }
-            })()}
+          <div className="z-50">
+            <MatchModal
+              isOpen={isPopupOpen}
+              onClose={closePopup}
+              match={match}
+              fetchMatch={fetchMatch}
+            />
           </div>
-          <Modal
-            title="Bạn có chắc chắn muốn thách đấu với người này không?"
-            open={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-            okText="Có"
-            cancelText="Không"
-          ></Modal>
-          <Modal
-            title="Bạn có chắc chắn muốn hủy trận đấu?"
-            open={isModalOpen1}
-            onOk={handleOk1}
-            onCancel={handleCancel1}
-            okText="Có"
-            cancelText="Không"
-          ></Modal>
-        </div>
-      </div>
-      <div className="z-50">
-        <MatchModal
-          isOpen={isPopupOpen}
-          onClose={closePopup}
-          match={match}
-          fetchMatch={fetchMatch}
-        />
-      </div>
+        </>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

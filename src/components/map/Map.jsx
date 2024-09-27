@@ -133,7 +133,7 @@ const Map = ({ viewport, setViewport, setResultClick, nearByLocation }) => {
         longitude={viewport?.longitude}
         fill="#4d83f0"
       />
-      {nearByLocation?.data?.map((location) => {
+      {nearByLocation?.map((location) => {
         return (
           <Pin
             latitude={location?.coordinates.coordinates[1]}

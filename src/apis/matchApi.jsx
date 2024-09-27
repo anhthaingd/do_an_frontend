@@ -71,3 +71,23 @@ export const getMatchByID = (id) => {
       throw error;
     });
 };
+
+export const getMatchByStatus = (data) => {
+  return Api.post(`/match/status`, data)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+};
+
+export const getMatchByStatusAndOwnerID = (data) => {
+  return Api.post(`/match/status/owner`, data)
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
+      throw error;
+    });
+};

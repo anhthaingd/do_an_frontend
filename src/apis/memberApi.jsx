@@ -24,6 +24,18 @@ export const deleteMember = (data) => {
     });
 };
 
+export const updateMember = (memberID) => {
+  return Api.put(`/member/${memberID}`)
+    .then((response) => {
+      // Xử lý dữ liệu trả về từ response ở đây
+      return response.data;
+    })
+    .catch((error) => {
+      // Xử lý lỗi ở đây
+      throw error;
+    });
+};
+
 export const getMemberByGroupID = (groupID) => {
   return Api.get(`/member/group/${groupID}`)
     .then((response) => {
@@ -46,4 +58,4 @@ export const getMemberByUserID = (userID) => {
       // Xử lý lỗi ở đây
       throw error;
     });
-}
+};
